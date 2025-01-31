@@ -1,5 +1,5 @@
 body {
-    font: 20px "Helvetica", Times, sans-serif;
+    font: 20px "Helvetica", Helvetica, sans-serif;
     font-weight: 300;
     line-height: 1.8;
     color: #000000;
@@ -20,7 +20,6 @@ a {
 
 .container-fluid {
   padding: 0px;
-  /*padding-bottom: 70px;*/
 }
 
 nav {
@@ -36,7 +35,7 @@ nav {
 }
 
 .nav-title{
-  font: 25px "Helvetica", Times, sans-serif;
+  font: 25px "Helvetica", Helvetica, sans-serif;
   font-weight: 300 bold;
   margin-left: 15px;
   margin-right: 15px;
@@ -44,18 +43,18 @@ nav {
 }
 
 .nav-link {
-  font: 20px "Helvetica", Times, sans-serif;
-  border: none;  /* No border initially */
+  font: 20px "Helvetica", Helvetica, sans-serif;
+  border: none; 
   padding: 10px 30px;
   background-color: #c5c5c5;
-  color: #000000;;  /* Initial text color is black */
-  position: relative;  /* For positioning the bottom border */
-  transition: color 0.3s, border-bottom 0.3s;  /* Smooth transitions */
+  color: #000000;;  
+  position: relative; 
+  transition: color 0.3s, border-bottom 0.3s;  
 }
 
 .nav-link:hover {
-  color: #888;  /* Lighter text color on hover */
-  border-bottom: 3px solid #888;  /* Bottom border appears on hover */
+  color: #888;  
+  border-bottom: 3px solid #888; 
 }
 
 #btn {
