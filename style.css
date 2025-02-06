@@ -169,3 +169,16 @@ code {
   margin-top: 75px;
   margin-bottom: 15px;
 }
+
+.center_image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  border: 1px solid #555;
+}
+
+.text {
+  font: 20px "Helvetica", Helvetica, sans-serif;
+  font-weight: 200;
+}
