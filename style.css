@@ -182,3 +182,12 @@ code {
   font: 20px "Helvetica", Helvetica, sans-serif;
   font-weight: 200;
 }
+
+.img-container {
+  display: flex;
+}
+.img-container img {
+  width: 33%;
+  padding: 5px;
+  border: 1px solid #555;
+}
