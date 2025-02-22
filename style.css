@@ -186,10 +186,28 @@ code {
 .img-container {
   display: flex;
 }
+
 .img-container img {
   width: 33%;
   padding: 5px;
   border: 1px solid #555;
   margin-left: auto;
   margin-right: auto;
+}
+
+code {
+  /* For copy-pastable code */
+  background-color: #f4f4f4;  /* Light gray background */
+  color: #333;                /* Dark gray text */
+  padding: 5px;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+}
+
+.code-box {
+  /* For the box that holds the code */
+  background-color: #f4f4f4;  /* Light grey background */
+  border: 1px solid #ddd;     /* Light border */
+  padding: 15px;
+  border-radius: 5px;
 }
