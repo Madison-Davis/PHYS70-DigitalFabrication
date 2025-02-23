@@ -27,19 +27,19 @@
 <p class="margin">   </p>
 
 <h3>Week 4: Microcontroller Programming</h3>
-<p><br></p>
 <h4>Do Something With An Arduino</h4>
 This week, we were asked to program an Arduino board to do something. 
-<br>
 I chose to create a LED-chaser effect display using a manual input.
 Here is the final result:
 <p><br></p>
 <video class="center_image" width="640" height="360" controls>
-  <source src="week4_final.MOV" type="video/quicktime">
+  <source src="part2_video.MOV" type="video/quicktime">
   Your browser does not support the video tag.
 </video>
 <p><br></p>
-I first tested it by running a schematic in TinkerCad (a browser-friendly way to 
+<h4>Part 1: Buttons</h4>
+Part 1 focuses on implementing the concept using a button.  Part 2 then transitions to using a microphone.
+I first tested the concept by running a schematic in TinkerCad (a browser-friendly way to 
 create and test circuits).  You can look at it in TinkerCad <a href="https://www.tinkercad.com/things/kf47rsTs7wX-phys70-week-42">here</a>.
 I used an Arduino IDE because that is all that was provided for microcontrollers.  Here is the schematic and a simulated video. 
 
@@ -173,6 +173,152 @@ Once you are done uploading, you can now test it out!
 <p><br></p>
 <video class="center_image" width="640" height="360" controls>
   <source src="week4_final.MOV" type="video/quicktime">
+  Your browser does not support the video tag.
+</video>
+<p><br></p>
+
+<p><br></p>
+<h4>Part 1: Microphone</h4>
+This version simply replaces the button with a microphone. 
+All materials are the same from Part 1.  The only 
+exception is to find an SPW2430 MEMS microphone.  SPW2430 has a built-in audio preamplifier to level the signal up to what our board requires.
+We are using an ESP32, whose analog-to-digital converter (ADC) has a resolution of 12 bits.
+This means it detects up to 4096 analog levels.  You'll see the '4096' in the code below,
+which is what this is referring to.
+<p><br></p>
+After grabbing your items, arrange them on the breadboard as such.
+Again, this is the exact same setup, except we are now using a SPW2430.
+The pin-inputs are the same as Part 1.
+<p><br></p>
+<div class="img-container">
+  <img src="setup2_view1.HEIC">
+  <img src="setup2_view2.HEIC">
+</div>
+<p><br></p>
+
+Next, open Arduino following the steps from Part 1, and now copy-paste this code.
+Note: you might want to change the amplitude-conditional statement from > 170 to
+some other number.  For my experiments and noise-environment settings, 170
+was sufficient, but I could've even done a number such as 180-190.
+You can determine what number fits best by looking at the console.
+I provide this for you by doing <code>Serial.println(amplitude)</code>.
+to determine what "noise level" your environment is in.
+A higher number may allow for more stability against outside noise. 
+<div class="code-box">
+  <pre><code class="language-arduino">
+  // PHYS70 Week 4 Schematic
+
+  // Variables: Pins
+  const int led1 = 25;
+  const int led2 = 26;
+  const int led3 = 27;
+  const int led4 = 14;
+  const int led5 = 12;
+  const int microphone = A6; // corresponds to D34 or '34' on ESP32
+
+  // Variables: Measuring Microphone
+  const int measureWindow = 50; // 50 ms
+  unsigned int sample;
+
+  // Variables: Sequence
+  long seqInterval = 100;
+  int seqStep = 0;
+  unsigned long currSeqMillis;
+  long prevSeqMillis;
+  bool startSeq;
+
+
+  // Setup: Run Once
+  void setup() 
+  {
+      Serial.begin(9600);
+      pinMode(led1, OUTPUT);
+      pinMode(led2, OUTPUT);
+      pinMode(led3, OUTPUT);
+      pinMode(led4, OUTPUT);
+      pinMode(led5, OUTPUT);
+  }
+
+
+  // Loop: Run Continuously
+  void loop() 
+  {
+      unsigned long startMeasureMillis= millis(); 
+      unsigned int amplitude = 0;  
+      unsigned int signalMax = 0;
+      unsigned int signalMin = 4096;
+
+      // collect data every 50 ms
+      while (millis() - startMeasureMillis < measureWindow)
+      {
+        sample = analogRead(A6);   
+        // toss out spurious readings
+        if (sample < 4096) 
+        {
+            if (sample > signalMax)
+            {
+              signalMax = sample;  
+            }
+            else if (sample < signalMin)
+            {
+              signalMin = sample; 
+            }
+        }
+      }
+      // max - min = peak-peak amplitude
+      amplitude = signalMax - signalMin;  
+      Serial.println(amplitude);
+
+      // If loud enough, reset timing and sequence to begin
+      // For ESP32, experiments show that about 170 is sufficient for a clap, higher can be more robust to outside noise
+      if (amplitude > 170) {
+        startSeq = true;
+        prevSeqMillis = millis();
+        seqStep = 0;
+      }
+
+      // Go through sequence
+      while (startSeq) {
+      currSeqMillis = millis();
+      if (currSeqMillis - prevSeqMillis >= seqInterval) {
+          prevSeqMillis = currSeqMillis;
+
+          // Turn LEDs on according to sequence
+          switch (seqStep) {
+            case 0:
+              digitalWrite(led3, HIGH);
+              break;
+            case 1:
+              digitalWrite(led3, LOW);
+              digitalWrite(led2, HIGH);
+              digitalWrite(led4, HIGH);
+              break;
+            case 2:
+              digitalWrite(led2, LOW);
+              digitalWrite(led4, LOW);
+              digitalWrite(led1, HIGH);
+              digitalWrite(led5, HIGH);
+              break;
+            case 3:
+              digitalWrite(led1, LOW);
+              digitalWrite(led5, LOW);
+              break;
+          }
+
+          seqStep++;
+          if (seqStep > 3) {
+            startSeq = false;
+          }
+        }
+      }
+  }
+</code></pre> 
+</div>
+<p><br></p>
+Once you are done uploading, you can now test it out!
+<p><br></p>
+<video class="center_image" width="640" height="360" controls>
+  <source src="part2_video.MOV" type="video/quicktime">
   Your browser does not support the video tag.
 </video>
 <p><br></p>
