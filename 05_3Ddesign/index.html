@@ -24,8 +24,104 @@
 <p class="margin">   </p>
 
 <h3>Week 5: 3D Design & Printing</h3>
+<p><br></p>
+<h4>Part 1: Design and 3D Print</h4>
+This week, we're asked to design and 3D print a part that is more complicated
+than with subtractive methods.  I decided to focus on one of the final project
+ideas I had: constructing a wand.  I was inspired off of 
+<a href="https://www.youtube.com/watch?v=HailNA14bNk&t=447s">this video</a>
+and began working on my own design.
+<p><br></p>
+First, I thought about what main electrical components I need.
+After consulting the teaching staff, I needed the following parts:
+<ol>
+  <li>ESP32 Microcontroller</li>
+  <li>Accelerometer</li>
+  <li>LiPO Battery</li>
+</ol>
+<p><br></p>
+I gathered up these materials and used a caliber to measure the combined length,
+largest width, and largest height:
+<p><br></p>
+<img class="center_image" src="caliber.HEIC" alt="caliber">
+<p><br></p>
+Here were my results:
+<ol>
+  <li>Combined length: 57.1 + 20.4 + 21 = 93.1 mm</li>
+  <li>Largest width: 28.3 mm (ESP32)</li>
+  <li>Largest height: 13 mm (ESP32)</li>
+</ol>
+<p><br></p>
+With these calculations, I opened Autodesk fusion to design my wand.  The
+wand has four main parts:
+<ol>
+  <li>Main, Bottom: a half-cylinder where all the circuitry would go</li>
+  <li>Main, Top: a half-cylinder acting as a cover for the circuit</li>
+  <li>Handle: a doorknob-looking end to the wand, for fastening</li>
+  <li>Tip: a decorative piece for the other end, to make it look like a wand</li>
+</ol>
+<p><br></p>
+<div class="img-container">
+  <img src="wand1.png">
+  <img src="wand2.png">
+</div>
+<p><br></p>
+Here are all the parameters of the wand, as well as some photos of the 
+wand.  The parameters were based on my measurements so that the 
+circuit would fit within the main cylindrical-shaped container.
+main_circuit refers to the cutout within the cylinder for the circuitry.
+main_wand refers to the overall cylinder-shape that holds the circuit.
+<p><br></p>
+<table class="myTable">
+  <tr><th>Name</th><th>Value (mm)</th>
+  <tr><td>main_wand_diameter</td><td>40</td>
+  <tr><td>main_wand_length</td><td>130</td>
+  <tr><td>main_circuit_width</td><td>28</td>
+  <tr><td>main_circuit_length</td><td>100</td>
+  <tr><td>handle_diameter</td><td>40</td>
+  <tr><td>handle_length</td><td>33</td>
+  <tr><td>tip_length</td><td>150</td>
+</table>
+<p><br></p>
+I don't want to print out the entire thing at this moment, as
+I want to ensure I like the size dimensions first.
+The total length is about 300mm, or 11 inches.
+The diameter is 40mm, or 1.57 inches.
+If you know anything about Harry Potter, most of their wants are between
+9-15 inches and a diameter of 1 inch, so in theory, the print
+should feel reasonably realistic/not too big.  Therefore, I am only 
+going to print the handle for now.
+<p><br></p>
+In Autodesk, I saved the handle body using 'Save Mesh'.  This automatically opens
+up PrusaSlicer for me.  If you don't have Prusa, download it for your OS and
+select the appropriate Prusa model you will be using.  Shown below is how
+my handle looks in Prusa.  I made the following edits once in Prusa:
+<ol>
+  <li>Rotated the handle so that the end of the handle is on the base</li>
+  <li>Selected 'General: PLA' for material</li>
+  <li>Selected 'Infill: 15%' for infill</li>
+  <li>Selected 'Support on build plate only' to allow for better printing</li>
+</ol>
+<p><br></p>
+<div class="img-container">
+  <img src="handle1.png">
+  <img src="handle2.png">
+</div>
+<p><br></p>
+Once this was done, I simply saved it as a g-code file, placed the file on an
+external drive, and then inserted that drive into my Prusa hardware.
+Ensure you are using the correct filament for the Prusa (one way you can tell is based on
+the heat-parameter: if the parameter is 215 degrees F, you chose PLA correctly).
+<p><br></p>
+Now, here is the finished product!
+<p><br></p>
+<img class="center_image" src="" alt="result">
+<p><br></p>
 
-<h4>Assignment: Model and 3D print something</h4>
+<h4>Part 2: Revopoint 3D Scan</h4>
+
+
+<h4>Part 3: Final Project</h4>
 
 
 </div>
