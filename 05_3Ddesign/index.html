@@ -27,7 +27,7 @@
 
 <p class="margin">   </p>
 <div class="flexrow">
-  <a id="btn" href="./week3.zip" download>Download My CAD + g-Code Files!
+  <a id="btn" href="./week5.zip" download>Download My CAD + g-Code Files!
   </a>
 </div>
 <p class="margin">   </p>
@@ -78,8 +78,8 @@ wand has four main parts:
 Here are all the parameters of the wand, as well as some photos of the 
 wand.  The parameters were based on my measurements so that the 
 circuit would fit within the main cylindrical-shaped container.
-main_circuit refers to the cutout within the cylinder for the circuitry.
-main_wand refers to the overall cylinder-shape that holds the circuit.
+'main circuit' refers to the cutout within the cylinder for the circuitry.
+'main wand' refers to the overall cylinder-shape that holds the circuit.
 <p><br></p>
 <table class="myTable">
   <tr><th>Name</th><th>Value (mm)</th>
@@ -124,29 +124,57 @@ the heat-parameter: if the parameter is 215 degrees F, you chose PLA correctly).
 <p><br></p>
 Now, here is the finished product!
 <p><br></p>
-<img class="center_image" src="" alt="result">
+<img class="center_image" src="part1_final.jpeg" alt="result">
+<p><br></p>
+Joey and I also began work on 3D printing some of the hand-model we want to do
+for Week 9: Radio Communication.  Here is part of the model we are printing this
+week.  Feel free to download the .gcode file for these specific parts using
+the button at the top of this page.
+<p><br></p>
+<img class="center_image" src="part1_hand.png" alt="result">
 <p><br></p>
 
 <h4>Part 2: Revopoint 3D Scan</h4>
-Here, we were asked to scan an item.  I decided to scan this item using a Revopoint:
-<p><br></p>
-<img class="center_image" src="" alt="item">
+Here, we were asked to scan an item.  I heard fluffy things were harder, and
+wanting a challenge with my absurd collection of alpaca plushies, I decided
+to scan my tiniest alpaca Toast using a Revopoint.
 <p><br></p>
 First, I set up the environment to allow me to get a good scan.  I used proper lighting
-and a turning-board to help me move the object.
+and a turning-board to help me move the object.  I put Toast on a rotatable board.
 <p><br></p>
-<img class="center_image" src="" alt="environment">
+<div class="img-container">
+  <img src="part2_alpaca2.HEIC">
+  <img src="part2_alpaca1.HEIC">
+</div>
 <p><br></p>
-Next, I turned on the ___ software to begin a scan.  I did several scans by Starting/Finishing.
-Here was the result:
+Next, I turned on the RevoScan5.4.1 software to begin a scan.  
+I did two main scans.  After doing one scan, one must click 'Fuse' to
+consolidate the points.  I did 0.18 in size for the points, where the smaller
+value allows for more fine-grained details. Here were the results:
 <p><br></p>
-<img class="center_image" src="" alt="result">
+<div class="img-container">
+  <img src="part2_trial1.HEIC">
+  <img src="part2_trial1pt2.HEIC">
+</div>
 <p><br></p>
-After making the parts, I cleaned up some of the floating points by selecting and deleting
-on the software.  This is the result:
+I then used the poly tool to delete some of the floor.  
+Once this was cleaned up, I tried to merge thw two scans:
 <p><br></p>
-<img class="center_image" src="" alt="result">
+<img class="center_image" src="part2_trial1pt3.HEIC" alt="result">
 <p><br></p>
+Sadly, it could not merge due to the overlap being less than 10%.  
+I decided to redo the smaller scan to make it larger.  
+Here was the second attempt:
+<p><br></p>
+<img class="center_image" src="part2_trial2.HEIC" alt="result">
+<p><br></p>
+Even with more scans, the overalp still was not enough.  I attributed
+this to the fact the points were too 'cloudy' for the software to recognize.
+My third attempt was to stick with one scan and keep 'adding' to it by
+resuming the scan to get bald spots.  Here was the final result! 
+Feel free to download the revo file using the button at the top of the page.
+<p><br></p>
+<img class="center_image" src="part2_trial3.HEIC" alt="result">
 <p><br></p>
 <h4>Part 3: Final Project</h4>
 Finally, we are asked to put down more information about our final project.
@@ -175,13 +203,20 @@ Here is my timeline:
 <p><br></p>
 Note that another final project idea was to create a moving arm.  I am
 pivoting that slightly to a moving hand, based off of <a href="https://www.youtube.com/watch?v=Fvg-v8FPcjg">this video</a>.
-I still want to do this, but I will do it not as my final project.
+I still want to do this, but I will not do it as my final project.
 Instead, I will do it during Week 9: Bluetooth with a partner who was also interested.
 The idea would be to have two microcontrollers talking via Bluetooth.  One senses movement
 with a glove, and the other responds by controlling servos in the 3D printed hand.
-This project also requires a lot of 3D printing, 9 pieces in total.  Therefore, I will handle
-this by printing out two pieces per week, starting at Week 5.  This means that by Week 9,
-I will only need to print out one more piece.
+Specifically, each finger has a sensor on the glove.  If the sensor is tightened,
+it'll send the signal to the appropriate servo to rotate.
+<p><br></p>
+This project requires a lot of 3D printing, 8 pieces in total.  Therefore, I will handle
+this by printing out pieces in the coming weeks.  As shown below (and was also
+shown in 'Part 1' section), half of these pieces are being printed out this week:
+<p><br></p>
+<img class="center_image" src="part1_hand.png" alt="result">
+<p><br></p>
+
 <p><br></p>
 <p><br></p>
 </div>
