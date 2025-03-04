@@ -134,6 +134,43 @@ the button at the top of this page.
 <img class="center_image" src="part1_hand.png" alt="result">
 <p><br></p>
 
+<p><br></p>
+<h4>Part 1.5: Design and 3D Print, Part 2</h4>
+I realized after the first print that 'subtractive' methods included not being
+able to make it on a CNC as well as a laser cutter.  Since I believe the handle
+can be made using a CNC, I decided to go ahead and also 3D print out the lamp
+for the final project as well.  Download all the relevant files using
+the button at the top of this page.
+<p><br></p>
+First, I opened up a new sketch in Autodesk.  Then, I made a sketch for the side.
+The dimensions are shown in the image below, but feel free to edit these as you desire.
+The goal was for it to fit a standard LED bulb.
+After this, I used the Revolver tool to revolve it and make an uncut 3D dimensional
+lamp.  Finally, I Extruded the slanted rectangle in the sketch to intersect with the
+3D dimensional lamp.  This cut out an individual part of the lamp.
+<p><br></p>
+<div class="img-container">
+  <img src="part1.5_sketch.png">
+  <img src="part1.5_individual.png">
+</div>
+<p><br></p>
+Next, I used the Circular Pattern tool to revolve this individual piece around.
+The piece on the left was my initial design.  I decided it was too 'pudgy'
+and so made it skinnier by editing the dimensions of the base sketch.
+The right-side image is the most updated one.
+<p><br></p>
+<div class="img-container">
+  <img src="part1.5_pattern.png">
+  <img src="part1.5_pattern2.png">
+</div>
+<p><br></p>
+Once this was done, I combined the parts into one boy, then exported the singular body as a Mesh 
+to PrusaSlicer.  Here was the result: 
+<p><br></p>
+<img class="center_image" src="part1.5_prusa.png" alt="result">
+<p><br></p>
+
+
 <h4>Part 2: Revopoint 3D Scan</h4>
 Here, we were asked to scan an item.  I heard fluffy things were harder, and
 wanting a challenge with my absurd collection of alpaca plushies, I decided
@@ -179,8 +216,8 @@ Feel free to download the revo file using the button at the top of the page.
 <h4>Part 3: Final Project</h4>
 Finally, we are asked to put down more information about our final project.
 My final project is a wand-controlled lamp light over Bluetooth.
-The lamp will be based on <a href="https://www.thingiverse.com/thing:19104">this</a> intricate design.
-The wand I will hand-design.  Shown below is a finalized 3D model of the wand:
+The lamp and wand I will hand-design.  In fact, version 1 of the lamp was introduced
+in Part 1.5, shown above.  Shown below is a finalized 3D model of the wand:
 <p><br></p>
 <img class="center_image" src="wand1.png" alt="wand">
 <p><br></p>
@@ -188,7 +225,8 @@ Here is my bill of materials:
 <ol>
   <li>2x ESP32 Microcontroller</li>
   <li>2x LiPo battery</li>
-  <li>1x LED</li>
+  <li>1x LED (one powerful enough to light up more than the small breadboard LEDs we use in class)</li>
+  <li>Light translucent fabric to cover the LED</li>
   <li>8x wires (4 for VIN/GND, 4 for connecting LED and accelerometer)</li>
   <li>PLA Filament for 3D prints of wand and lamp</li>
 </ol>
