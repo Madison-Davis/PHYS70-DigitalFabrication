@@ -1,0 +1,28 @@
+{
+    "edit_time": "1741036360",
+    "guid": "68298f71-9e80-44c1-ab07-b83d3ae4d143",
+    "model_mesh_count": 0,
+    "model_pointcloud_count": 1,
+    "name": "madisondavis_alpaca",
+    "nodes": [
+        {
+            "childs": [],
+            "guid": "dd71c901-5989-4649-9cb8-fe6c678a8df3",
+            "name": "0303_01",
+            "type": 2
+        }
+    ],
+    "scan_scene": {
+        "camType": "131072",
+        "cameraRotationState": "0",
+        "depthCamAutoEx": "0",
+        "depthCamExValue": "1",
+        "frameScaleIdx": "1",
+        "rgbCamAutoEx": "1",
+        "rgbCamExValue": "0",
+        "scanMode": "0",
+        "scanObject": "0"
+    },
+    "size": "602752770",
+    "version": "1.2"
+}
