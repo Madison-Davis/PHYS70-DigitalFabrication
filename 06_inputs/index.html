@@ -24,10 +24,129 @@
 <p class="margin">   </p>
 
 <h3>Week 6: Electronic Inputs</h3>
+<p><br></p>
+<h4>Assignment 1: Plant Watering Capactive Sensor</h4>
+We're asked to make a capacitive sensor to measure a physical quantity with a microcontroller. 
+In addition to this, we are to include a schematic of the sensor and calibrate it by plotting points on the graph.
+Finally, we should discuss the relationship between the signals recorded by the microcontroller and the physical quantities being measured.
+<p><br></p>
+I suck at keeping plants alive, so I thought, 'why not sense when I need to water it?'.
+The goal is to have a capacitor that senses soil moisture water, where the water acts as a dieletric.
+When the soil is saturated, a green LED will light up, indicating the plant is good and does not need anymore water.
+Here is my Schematic, made in <a href="https://www.tinkercad.com/things/kpKNkKsL4AA-phys70-week-6-part-1">Tinkercad</a>.
+<p><br></p>
+<div class="img-container">
+  <img src="part1_schematic.png">
+  <video class="center_image" width="400" height="200" controls>
+    <source src="part1_schematic.mov" type="video/quicktime">
+    Your browser does not support the video tag.
+  </video>
+</div>
+<p><br></p>
+Here is my setup in real-life, followed by the list of materials:
+<ol>
+  <li>ESP 32</li>
+  <li>text</li>
+  <li>text</li>
+  <li>text</li>
+</ol>
+<p><br></p>
+<img class="center_image" src="image.png"alt="not loading, try Safari/clear cache">
+<p><br></p>
+I connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  Feel free to copy-paste
+into your own IDE, changing the pin numbers as you see fit:
+<p><br></p>
+<div class="code-box">
+  <pre><code class="language-arduino">
+    // PHYS70 Week 6 Part 1
+  </code></pre> 
+</div>
+<p><br></p>
+Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it,
+along with the data plot, which plots signals from the microcontroller over time.
+<p><br></p>
+<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<p><br></p>
+<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<p><br></p>
+How do the signals collected relate to the physical quantity (ie. water) being measured? 
+TODOOOOOOOOOOOOOOOOOO
+<p><br></p>
+<h4>Assignment 2: RFID Security Sensor</h4>
+We're asked to configure and use another sensor (temperature, microphone, etc.) and
+include at least one output device.  Similar to Part 1, we are to include a schematic of the sensor, 
+calibrate it, and discuss the relationship between the signals recorded 
+by the microcontroller and the physical quantities being measured.
+<p><br></p>
+For this part, I wanted to mimic badge scanning using a RFID card scanner.  When a badge is
+scanned, if the user is authorized, a servo will twist to unlock a barrier.
+Here is my Schematic, made in <a href="https://www.tinkercad.com/things/jwAF6ck27Xz-phys-70-week-6-part-2">Tinkercad</a>.
+Tinkercad does not have a RFID scanner, but in looking up <a href="https://www.youtube.com/watch?v=cFK87MJ96A8&t=291s">this tutorial</a>,
+I found that the RFID scanner needs only a VIN, GND, and 5 sensors to plug in.  Therefore, just for the purposes of this
+Schematic, I mimicked the scanner with a microcontroller and plugged in VIN, GND, and 5 wires in gray.
+<p><br></p>
+<img class="center_image" src="part2_schematic.png" alt="result">
+<p><br></p>
+Here is my setup in real-life, followed by the list of materials:
+<ol>
+  <li>ESP 32</li>
+  <li>text</li>
+  <li>text</li>
+  <li>text</li>
+</ol>
+<p><br></p>
+<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<p><br></p>
+I connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  Feel free to copy-aste
+into your own IDE, changing the pin numbers as you see fit:
+<p><br></p>
+<div class="code-box">
+  <pre><code class="language-arduino">
+    // PHYS70 Week 6 Part 2
+  </code></pre> 
+</div>
+<p><br></p>
+Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it,
+along with the data plot, which plots signals from the microcontroller over time.
+<p><br></p>
+<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<p><br></p>
+<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<p><br></p>
+How do the signals collected relate to the physical quantity (ie. water) being measured? 
+TODOOOOOOOOOOOOOOOOOO
+<p><br></p>
 
-<h4>Assignment 1: Capactive Sensor<h4>
+<h4>Part 3: CAD Files for CNC Week</h4>
+We were asked to prepare CAD files for CNC week. 
+I decided to find a 3D STL files so I could mill out a (2.5D) shape.
+I want to CNC mill a topographic map of my hometown, and may
+also optionally CNC the handle I did from Week 5.  This part
+just focuses on the former, and its STL file is available by
+clicking the download button on this page.
+<p><br></p>
+This took longer thaan I wish to admit, namely because I had 
+to go through half-a-dozen countour mapping sites to find one that is free and works at the scale I wanted.  Here
+are the steps I took:
+<ol>
+  <li>Open on the browser <a href="https://contours.axismaps.com/#12/27.9885/86.9233">contour axis mapping</a></li>
+  <li>Move the window do your desired area, then adjust the countor-granularity parameters for it to generate</li>
+  <li>Download as a .svg</li>
+  <li>Use <a href="https://svg2stl.com">this link</a> to convert the .svg to an STL file</li>
+</ol>
 
-<h4>Assignment 2: [Use + Calibrate Another Sensor]</h4>
+<p><br></p>
+<div class="img-container">
+  <img src="part1_contourwebsite.png">
+  <img src="part3_contours.png">
+</div>
+<p><br></p>
+Here is the result when the STL file is imported into PrusaSlicer.  If, for some reason this
+STL file does not do well in the CNC machine, I will resort to milling my project parts, which
+are available in Week 5's download button.
+<p><br></p>
+<img class="center_image" src="part3_contourprusa.png" alt="result">
+<p><br></p>
 
 </div>
 </xmp>
