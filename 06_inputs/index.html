@@ -45,32 +45,79 @@ Here is my Schematic, made in <a href="https://www.tinkercad.com/things/kpKNkKsL
 <p><br></p>
 Here is my setup in real-life, followed by the list of materials:
 <ol>
-  <li>ESP 32</li>
-  <li>text</li>
-  <li>text</li>
-  <li>text</li>
+  <li>ESP 32 microcontroller</li>
+  <li>Breadboard</li>
+  <li>2 LEDs (one red, one green)</li>
+  <li>2 Resistors (1k<span>&#8486;</span> is sufficient)</li>
+  <li>8 wires</li>
+  <li>2 alligator clips</li>
+  <li>Cup (plastic or recyclable paper)</li>
+  <li>2 strips of copper foil, at least as long as height of cup</li>
+  <li>Tape (to secure the foil to the outside of the cup)</li>
+  <li>Water (can store in another cup to then pour into our copper-foiled cup)</li>
 </ol>
 <p><br></p>
-<img class="center_image" src="image.png"alt="not loading, try Safari/clear cache">
+<img class="center_image" src="part1_setup.HEIC"alt="not loading, try Safari/clear cache">
 <p><br></p>
 I connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  Feel free to copy-paste
 into your own IDE, changing the pin numbers as you see fit:
 <p><br></p>
 <div class="code-box">
   <pre><code class="language-arduino">
-    // PHYS70 Week 6 Part 1
+// PHYS70 Week 6: Plant Capacitor
+//
+
+// variables
+const int redLED = 25;
+const int greenLED = 33;
+const int capacitor = 35;
+int val;
+
+void setup()
+{
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(capacitor, INPUT);
+  Serial.begin(115200);
+}
+
+void loop()
+{
+  val = analogRead(capacitor);
+  Serial.println(val);
+  
+  // capacitor goes up to 4095
+  if (val > 4000) {
+    digitalWrite(redLED, LOW);
+    digitalWrite(greenLED, HIGH);
+  } else {
+    digitalWrite(redLED, HIGH);
+    digitalWrite(greenLED, LOW);
+  }
+}
   </code></pre> 
 </div>
 <p><br></p>
-Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it,
-along with the data plot, which plots signals from the microcontroller over time.
+Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it:
 <p><br></p>
-<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<img class="center_image" src="part.png" alt="not loading, try Safari/clear cache">
 <p><br></p>
-<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+How do the signals collected relate to the physical quantity being measured? 
+The physical quantity we're measuring is the amount of water being poured in, and the signal
+we collect is the 'capacitance' from the alligator clip.  It appears that there is a 
+linear relationship.  Generally, the more water being poured in, the more of a dielectric 
+there is between the two copper plates.  This increases the area of the copper foil that 
+can be used to store a charge, thereby increasing the capacitance
+and subsequently our reading.  We can see the results shown below, where the x-axis is time
+(ie more water being poured in) and the y-axis is the capacitance/charge buildup.
+Look at the line of best fit, shown in red, for the 'points' that I draw.  
 <p><br></p>
-How do the signals collected relate to the physical quantity (ie. water) being measured? 
-TODOOOOOOOOOOOOOOOOOO
+There appears to be a lot of noise/amplitude between
+values.  This is likely because of the fact that during the pour, there isn't a lot of water
+initially across the entire strip.  Other possible factors may be the material of the cup and
+variations in the power-driven supply.
+<p><br></p>
+<img class="center_image" src="part1_graph.png" alt="not loading, try Safari/clear cache">
 <p><br></p>
 <h4>Assignment 2: RFID Security Sensor</h4>
 We're asked to configure and use another sensor (temperature, microphone, etc.) and
@@ -89,15 +136,23 @@ Schematic, I mimicked the scanner with a microcontroller and plugged in VIN, GND
 <p><br></p>
 Here is my setup in real-life, followed by the list of materials:
 <ol>
-  <li>ESP 32</li>
-  <li>text</li>
-  <li>text</li>
-  <li>text</li>
+  <li>ESP 32 microcontroller</li>
+  <li>2 breadboards connected/clipped together (ESP32 needs more room on both sides)</li>
+  <li>RFID-RC522 Scanning Board</li>
+  <li>1-2 PICCs (Proximity Integrated Circuit Cards)</li>
+  <li>Servo</li>
+  <li>Stick/dowel or something to attach to the servo</li>
+  <li>1 Resistor (1k<span>&#8486;</span> is sufficient)</li>
+  <li>An insane number of wires</li>
 </ol>
 <p><br></p>
 <img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
 <p><br></p>
-I connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  Feel free to copy-aste
+PLEASE NOTE that while you can plug the RFID into the breadboard, to really ensure the signals
+get through, you can use wires with connectors on their ends and plug those
+connectors into the RFID's wire inputs.  The picture above shows how I did that.
+<p><br></p>
+I then connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  Feel free to copy-aste
 into your own IDE, changing the pin numbers as you see fit:
 <p><br></p>
 <div class="code-box">
@@ -106,15 +161,12 @@ into your own IDE, changing the pin numbers as you see fit:
   </code></pre> 
 </div>
 <p><br></p>
-Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it,
-along with the data plot, which plots signals from the microcontroller over time.
+Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it:
 <p><br></p>
 <img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
 <p><br></p>
-<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
-<p><br></p>
-How do the signals collected relate to the physical quantity (ie. water) being measured? 
-TODOOOOOOOOOOOOOOOOOO
+I talked to Nathan and we agreed that there wouldn't really be a need to graph the signal
+strength here.  Nevertheless, I think this was a fun second project!
 <p><br></p>
 
 <h4>Part 3: CAD Files for CNC Week</h4>
@@ -137,7 +189,7 @@ are the steps I took:
 
 <p><br></p>
 <div class="img-container">
-  <img src="part1_contourwebsite.png">
+  <img src="part3_contourwebsite.png">
   <img src="part3_contours.png">
 </div>
 <p><br></p>
