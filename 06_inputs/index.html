@@ -25,6 +25,22 @@
 
 <h3>Week 6: Electronic Inputs</h3>
 <p><br></p>
+Shown below are my two main deliverables for this week: a capacitive plant waterer and a RFID security scanner!
+<p><br></p>
+
+<div class="video-container">
+  <video controls>
+    <source src="part1_final.MOV" type="video/quicktime">
+    Your browser does not support the video tag.
+  </video>
+  
+  <video controls>
+    <source src="part2_final.mov" type="video/quicktime">
+    Your browser does not support the video tag.
+  </video>
+</div>
+<p><br></p>
+
 <h4>Assignment 1: Plant Watering Capactive Sensor</h4>
 We're asked to make a capacitive sensor to measure a physical quantity with a microcontroller. 
 In addition to this, we are to include a schematic of the sensor and calibrate it by plotting points on the graph.
@@ -57,7 +73,13 @@ Here is my setup in real-life, followed by the list of materials:
   <li>Water (can store in another cup to then pour into our copper-foiled cup)</li>
 </ol>
 <p><br></p>
-<img class="center_image" src="part1_setup.HEIC"alt="not loading, try Safari/clear cache">
+<p><br></p>
+<img class="center_image" src="part1_setup1.HEIC" alt="not loading, try Safari/clear cache">
+<p><br></p>
+<div class="img-container">
+  <img src="part1_setup2.HEIC">
+  <img src="part1_setup3.HEIC">
+</div>
 <p><br></p>
 I connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  Feel free to copy-paste
 into your own IDE, changing the pin numbers as you see fit:
@@ -100,24 +122,38 @@ void loop()
 <p><br></p>
 Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it:
 <p><br></p>
-<img class="center_image" src="part.png" alt="not loading, try Safari/clear cache">
+<video class="center_image" width="640" height="360" controls>
+  <source src="part1_final.MOV" type="video/quicktime">
+  Your browser does not support the video tag.
+</video>
 <p><br></p>
 How do the signals collected relate to the physical quantity being measured? 
 The physical quantity we're measuring is the amount of water being poured in, and the signal
-we collect is the 'capacitance' from the alligator clip.  It appears that there is a 
-linear relationship.  Generally, the more water being poured in, the more of a dielectric 
+we collect is the 'capacitance' from the alligator clip.
+<p><br></p>
+See the photos below.  The left one is when I pour a small amount of water (x-axis time,
+y-axis our read value).  It appears that there is a linear relationship (red line of best fit, 
+which are my 'plotted points' that I go off of for this analysis).  
+Generally, the more water being poured in, the more of a dielectric 
 there is between the two copper plates.  This increases the area of the copper foil that 
 can be used to store a charge, thereby increasing the capacitance
-and subsequently our reading.  We can see the results shown below, where the x-axis is time
-(ie more water being poured in) and the y-axis is the capacitance/charge buildup.
-Look at the line of best fit, shown in red, for the 'points' that I draw.  
+and subsequently our reading. 
+<p><br></p>
+The right photo is shown when I pour more water in (roughly same rate).  
+It appears that the points suddenly 'speed jump' to the maximum possible read-in value of 4095.
+Why was this?  Turns out, water has a high dielectric constant.  This number 
+measures how much a material will increase the capacitance of a capacitor relative to a vacuum.
+For reference, air is about 1, but water is nearly 80!  Because of this high constant,
+just a little bit more water will cause the capacitance to suddenly spike.
 <p><br></p>
 There appears to be a lot of noise/amplitude between
-values.  This is likely because of the fact that during the pour, there isn't a lot of water
-initially across the entire strip.  Other possible factors may be the material of the cup and
-variations in the power-driven supply.
+values.  This might be because during the pour, only part of the copper is ever covered, so 
+part of the overlap between the copper plates interacts with air, which has a low dielectric constant.  
 <p><br></p>
-<img class="center_image" src="part1_graph.png" alt="not loading, try Safari/clear cache">
+<div class="img-container">
+  <img src="part1_graph.png">
+  <img src="part1_graph2.png">
+</div>
 <p><br></p>
 <h4>Assignment 2: RFID Security Sensor</h4>
 We're asked to configure and use another sensor (temperature, microphone, etc.) and
@@ -146,25 +182,159 @@ Here is my setup in real-life, followed by the list of materials:
   <li>An insane number of wires</li>
 </ol>
 <p><br></p>
-<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<div class="img-container">
+  <img src="part2_setup1.HEIC">
+  <img src="part2_setup2.HEIC">
+</div>
 <p><br></p>
 PLEASE NOTE that while you can plug the RFID into the breadboard, to really ensure the signals
 get through, you can use wires with connectors on their ends and plug those
 connectors into the RFID's wire inputs.  The picture above shows how I did that.
+Also note that some bug I've gotten is an 'estptool' internal error with Arduino IDE when 
+trying to upload code.  This is because of the baud rate.  Try setting it to 9600 or 115200,
+and in the serial monitor adjust it to that value as well.
 <p><br></p>
-I then connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  Feel free to copy-aste
-into your own IDE, changing the pin numbers as you see fit:
+I then connected the ESP32 to my computer and opened up Arduino IDE to begin coding.  You will need
+to make one change: for your cards, you'll want to read its printed-out HEX value from the 
+Serial monitor when you initially scan it, then add its value to the approvedUIDs array in the code.
+This way, when you scan it next time, you'll be authorized!
+Feel free to copy-paste into your own IDE, changing the pin numbers as you see fit:
 <p><br></p>
 <div class="code-box">
   <pre><code class="language-arduino">
-    // PHYS70 Week 6 Part 2
+// PHYS70 Week 6: RFID Security Scanner
+// https://toluademola.github.io/PS70-Tolu-Ademola/13_finalproject/index.html
+// https://randomnerdtutorials.com/security-access-using-mfrc522-rfid-reader-with-arduino/
+
+
+// Imports and Installs
+#include <SPI.h>           // Serial Peripheral Interface, allows comm between RFID-RC522 and ESP-32
+#include <MFRC522.h>       // Library for RFID-RC522; Arduino IDE => extensions => install MFRC522
+#include <ESP32Servo.h>    // Library to control servo motor
+
+
+// Variables
+// ESP-32 pin numberings here do matter!
+// See also File => Examples => MFRC522 for RFID example code
+#define SS_PIN 5
+#define RST_PIN 27
+#define SCK_PIN 18
+#define MISO_PIN 19
+#define MOSI_PIN 23
+const int servoPin = 22;
+MFRC522 rfid(SS_PIN, RST_PIN);
+Servo myServo;
+// array of approved IDs
+// edit to your list of IDs, which you can determine by looking at the printed value when the card is scanned
+const byte approvedUIDs[][4] = {{0xDE, 0xAD, 0xBE, 0xEF}, {0x87, 0xBB, 0x2A, 0x7B}}; 
+const int numApprovedUIDs = sizeof(approvedUIDs) / sizeof(approvedUIDs[0]);
+
+
+// Setup Function
+void setup() { 
+  Serial.begin(115200);
+  SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN); // Init SPI bus
+  rfid.PCD_Init(); // Init MFRC522 
+  myServo.attach(servoPin);
+  myServo.write(55);
+  Serial.println(F("This code scan the MIFARE Classsic NUID."));
+}
+ 
+
+// Loop Function
+void loop() {
+  // Reset the loop if no new card present on the sensor/reader. 
+  // This saves the entire process when idle.
+  if ( ! rfid.PICC_IsNewCardPresent()) {
+    return;
+  }
+  // Verify if the NUID has been readed
+  if ( ! rfid.PICC_ReadCardSerial()) {
+    return;
+  }
+   
+  // Check is the PICC of Classic MIFARE type
+  Serial.print(F("PICC type: "));
+  MFRC522::PICC_Type piccType = rfid.PICC_GetType(rfid.uid.sak);
+  Serial.println(rfid.PICC_GetTypeName(piccType));
+  if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI &&  
+    piccType != MFRC522::PICC_TYPE_MIFARE_1K &&
+    piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
+    Serial.println(F("Your tag is not of type MIFARE Classic."));
+    return;
+  }
+
+  // Print out some of card data if of correct type
+  Serial.println(F("The NUID tag is:"));
+  Serial.print(F("In hex: "));
+  printHex(rfid.uid.uidByte, rfid.uid.size);
+  Serial.println();
+  Serial.print(F("In dec: "));
+  printDec(rfid.uid.uidByte, rfid.uid.size);
+  Serial.println();
+
+  // Is this an approved card?
+  bool approved = false;
+  for (int i = 0; i &lt; numApprovedUIDs; i++) {
+    if (memcmp(rfid.uid.uidByte, approvedUIDs[i], 4) == 0) {
+      approved = true;
+      break;
+    }
+  }
+
+  // If it is an approved card...
+  // move servo up to unblock barrier
+  // after a few seconds, reset it
+  if (approved) {
+    Serial.println(F("Approved card.  Go forth, wizard."));
+    myServo.write(145);
+    delay(2000);
+    myServo.write(55);
+  } else {
+    Serial.println(F("Unapproved card.  You shall not pass!"));
+  }
+ 
+  // Halt PICC and stop encryption on PCD
+  rfid.PICC_HaltA();
+  rfid.PCD_StopCrypto1();
+}
+
+
+// Helper function
+// Dump a byte array as hex values to Serial. 
+void printHex(byte &ast;buffer, byte bufferSize) {
+  for (byte i = 0; i &lt; bufferSize; i++) {
+    Serial.print(buffer[i] &gt 0x10 ? " 0" : " ");
+    Serial.print(buffer[i], HEX);
+  }
+}
+
+
+// Helper function
+// Dump a byte array as dec values to Serial
+void printDec(byte &ast;buffer, byte bufferSize) {
+  for (byte i = 0; i &lt; bufferSize; i++) {
+    Serial.print(' ');
+    Serial.print(buffer[i], DEC);
+  }
+}    
   </code></pre> 
 </div>
 <p><br></p>
-Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it:
+Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it.
+One has a card whose hex representation is authorized (ie. its value is stored in the code), and the other is not.
 <p><br></p>
-<img class="center_image" src="image.png" alt="not loading, try Safari/clear cache">
+<video class="center_image" width="640" height="360" controls>
+  <source src="part2_final.mov" type="video/quicktime">
+  Your browser does not support the video tag.
+</video>
 <p><br></p>
+Feel free to also edit the printed statements in the code that occur when one is authorized or declined.
+Or, you know, just keep it as it is written...
+<p><br></p>
+<img class="center_image" src="you_shall_not_pass.jpeg" alt="result">
+<p><br></p>
+
 I talked to Nathan and we agreed that there wouldn't really be a need to graph the signal
 strength here.  Nevertheless, I think this was a fun second project!
 <p><br></p>

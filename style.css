@@ -211,3 +211,17 @@ code {
   padding: 15px;
   border-radius: 5px;
 }
+
+.video-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+video {
+  width: 33%; /* Adjust width as needed */
+  height: 300px; /* Set a smaller height */
+  object-fit: cover; /* Ensures the video fits well */
+  border: 1px solid #555;
+  margin-left: auto;
+  margin-right: auto;
+}
