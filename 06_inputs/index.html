@@ -30,7 +30,7 @@ Shown below are my two main deliverables for this week: a capacitive plant water
 
 <div class="video-container">
   <video controls>
-    <source src="part1_final.MOV" type="video/quicktime">
+    <source src="part1_final1.mov" type="video/quicktime">
     Your browser does not support the video tag.
   </video>
   
@@ -120,7 +120,10 @@ void loop()
   </code></pre> 
 </div>
 <p><br></p>
-Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it:
+Once written, I uploaded the code to the ESP32 using a cable, then let it run.  Here is a movie of it
+Feel free to also add some dirt and plants.  You may need to not stuff the copper too deep into
+the cup so that it can distinguish between dirt and water (where
+the water comes in from the top), but the code and methodology is the same. 
 <p><br></p>
 <video class="center_image" width="640" height="360" controls>
   <source src="part1_final.MOV" type="video/quicktime">
@@ -131,29 +134,29 @@ How do the signals collected relate to the physical quantity being measured?
 The physical quantity we're measuring is the amount of water being poured in, and the signal
 we collect is the 'capacitance' from the alligator clip.
 <p><br></p>
-See the photos below.  The left one is when I pour a small amount of water (x-axis time,
+See the first photo below.  This is where I pour a small amount of water in (x-axis time,
 y-axis our read value).  It appears that there is a linear relationship (red line of best fit, 
 which are my 'plotted points' that I go off of for this analysis).  
 Generally, the more water being poured in, the more of a dielectric 
 there is between the two copper plates.  This increases the area of the copper foil that 
 can be used to store a charge, thereby increasing the capacitance
-and subsequently our reading. 
-<p><br></p>
-The right photo is shown when I pour more water in (roughly same rate).  
-It appears that the points suddenly 'speed jump' to the maximum possible read-in value of 4095.
-Why was this?  Turns out, water has a high dielectric constant.  This number 
-measures how much a material will increase the capacitance of a capacitor relative to a vacuum.
-For reference, air is about 1, but water is nearly 80!  Because of this high constant,
-just a little bit more water will cause the capacitance to suddenly spike.
-<p><br></p>
+and subsequently our reading.
+<p><br></p> 
 There appears to be a lot of noise/amplitude between
 values.  This might be because during the pour, only part of the copper is ever covered, so 
 part of the overlap between the copper plates interacts with air, which has a low dielectric constant.  
 <p><br></p>
-<div class="img-container">
-  <img src="part1_graph.png">
-  <img src="part1_graph2.png">
-</div>
+<img class="center_image" src="part1_graph1.png" alt="not loading, try Safari/clear cache">
+<p><br></p>
+The next photo is shown when I pour more water in (roughly same rate).  
+It appears that the points suddenly 'speed jump' to the maximum possible read-in value of 4095.
+After plotting several points/lines of best fit, I found that an S-logistic curve fit best,
+followed by a quadratic and/or exponential curve.  Why is this?  It turns out that water has a high dielectric constant.  This number 
+measures how much a material will increase the capacitance of a capacitor relative to a vacuum.
+For reference, air is about 1, but water is nearly 80!  Because of this high constant,
+just a little bit more water will cause the capacitance to suddenly spike.
+<p><br></p>
+<img class="center_image" src="part1_graph2.png" alt="not loading, try Safari/clear cache">
 <p><br></p>
 <h4>Assignment 2: RFID Security Sensor</h4>
 We're asked to configure and use another sensor (temperature, microphone, etc.) and
