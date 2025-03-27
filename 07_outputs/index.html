@@ -29,6 +29,13 @@
 We're asked to make a serious attempt at the most challenging/intimidating aspect of the final project.
 We should include at least one input and one output device, and also write a microcontroller program to integrates at least one input device and one output device.
 <p><br></p>
+<div class="video-container">
+  <video controls>
+    <source src="presentation.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+<p><br></p>
 The hardest part I wanted to do set up communication between two microcontrollers.  This is because
 one microcontroller in the wand will send a signal to another microcontroller to turn on a light.
 <p><br></p>
@@ -37,7 +44,9 @@ Right now, they are connected by two breadboards solely for power purposes.  In 
 situation, both will be operated by batteries and so will separate.
 Microcontroller 1, the sender, is connected to an accelerometer.
 Microcontroller 2, the receiver is connected to a LED + resistor circuit.
-Here are all the materials you will need:
+Here are all the materials you will need.  I also include pictures.  The blown up pictures
+help with knowing where to put the wires into the pins.
+<p><br></p>
 <ol>
   <li>2 ESP32 Microcontrollers (I used an ESP32 and an Espressif ESP32)</li>
   <li>1 ITG/MPU Accelerometer</li>
@@ -47,6 +56,13 @@ Here are all the materials you will need:
   <li>Arduino IDE</li>
   <li>1 ESP32 plug-in cable (this will connect one ESP32 to your computer)</li>
 </ol>
+<p><br></p>
+<img class="center_image" src="setup1.png">
+<p><br></p>
+<div class="img-container">
+  <img src="setup2.png">
+  <img src="setup3.png">
+</div>
 <p><br></p>
 Now, with these materials, the first thing you need to do is find out the MAC address
 of the receiver ESP32.  <a href="https://randomnerdtutorials.com/esp-now-esp32-arduino-ide/">This</a>
@@ -93,186 +109,234 @@ to the same receiver ESP32.
 <p><br></p>
 <div class="code-box">
   <pre><code class="language-arduino">
-    /*
-    Rui Santos & Sara Santos - Random Nerd Tutorials
-    Complete project details at https://RandomNerdTutorials.com/esp-now-esp32-arduino-ide/  
-    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
-    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-  */
-  
-  #include <esp_now.h>
-  #include <WiFi.h>
-  
-  int ledPin = 23;
-  
-  // Structure example to receive data
-  // Must match the sender structure
-  typedef struct struct_message {
-      float a;
-      float b;
-      float c;
-  } struct_message;
-  
-  // Create a struct_message called myData
-  struct_message myData;
-  
-  // callback function that will be executed when data is received
-  void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-    memcpy(&myData, incomingData, sizeof(myData));
-    Serial.print("Bytes received: ");
-    Serial.println(len);
-    Serial.println(myData.a);
-  
-    if (myData.a >= 0) {
-      Serial.println("Low");
-      digitalWrite(ledPin, LOW);
-    } else {
-      Serial.println("High");
-      digitalWrite(ledPin, HIGH);
-    }
-  }
-   
-  void setup() {
-    // Initialize Serial Monitor
-    Serial.begin(115200);
-    pinMode(ledPin, OUTPUT);
+    // PHYS 70: MICROCONTROLLER RECEIVER
+
+    // Imports and Installs
+    #include esp_now.h
+    #include WiFi.h
     
-    // Set device as a Wi-Fi Station
-    WiFi.mode(WIFI_STA);
-  
-    // Init ESP-NOW
-    if (esp_now_init() != ESP_OK) {
-      Serial.println("Error initializing ESP-NOW");
-      return;
+    // Variables
+    const int ledPin = 23;
+    typedef struct struct_message {
+        float a;
+        float b;
+        float c;
+    } struct_message;
+    struct_message myData;
+    
+    // Class Definition
+    class DataRecv {
+      private:
+        int ledPin;
+        int threshold;
+        unsigned long lastTime = 0;
+        const unsigned long interval = 10;
+    
+      public:
+        DataRecv(int ledPin, int threshold) {
+          ledPin = ledPin;
+          threshold = threshold;
+          pinMode(ledPin, OUTPUT);
+        }
+    
+        static void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
+          // Process data when data is received
+          // Print out result, and if high enough, turn on LED
+          // Otherwise, turn off LED
+          memcpy(&myData, incomingData, sizeof(myData));
+          Serial.print("Bytes Received: ");
+          Serial.println(len);
+          Serial.print("Acceleration X: ");
+          Serial.println(myData.a);
+          
+          lastTime = millis();
+          if (myData.a >= threshold) {
+            Serial.println("Low - LED OFF");
+            digitalWrite(ledPin, LOW);
+          } else {
+            Serial.println("High - LED ON");
+            digitalWrite(ledPin, HIGH);
+            while (millis() - lastTime < interval) {
+              // Do nothing, just wait/let it stay high for a while
+            }
+            lastTime = millis();
+            digitalWrite(ledPin, LOW);
+          }
+        }
+    };
+    
+    // Create Receiver Instance
+    DataRecv receiver(ledPin, 0);
+    
+    void setup() {
+        // Initialize Serial Monitor
+        Serial.begin(115200);
+    
+        // Initialize WiFi for ESP-NOW
+        WiFi.mode(WIFI_STA);
+        if (esp_now_init() != ESP_OK) {
+            Serial.println("Error initializing ESP-NOW");
+            return;
+        }
+    
+        // Register Receive Callback
+        esp_now_register_recv_cb(receiver.OnDataRecv);
     }
     
-    // Once ESPNow is successfully Init, we will register for recv CB to
-    // get recv packer info
-    Serial.print("Going to get...");
-    esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
-  }
-   
-  void loop() {
-  
-  }
+    void loop() {
+        if (millis() - lastRecvTime > timeout) {
+            digitalWrite(ledPin, LOW);
+        }
+    }
+    
   </code></pre> 
 </div>
 <p><br></p>
 Finally, open a new Arduino IDE file, paste this code into the file, and upload it
-to the same sender ESP32.  You'll need to detach the cable from the receiver ESP32 to
-the sender ESP32 to do this.
+to the sender ESP32.  You'll need to unplug the cable and plug it into the sender ESP32
+to upload.
 <p><br></p>
 <div class="code-box">
   <pre><code class="language-arduino">
-    /*
-    https://randomnerdtutorials.com/esp-now-esp32-arduino-ide/
-    Rui Santos & Sara Santos - Random Nerd Tutorials
-    Complete project details at https://RandomNerdTutorials.com/esp-now-esp32-arduino-ide/
-    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
-    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-  */
-  #include <esp_now.h>
-  #include <WiFi.h>
-  #include <Adafruit_MPU6050.h>
-  #include <Adafruit_Sensor.h>
-  
-  
-  /* TODOS: 
-  REPLACE WITH YOUR RECEIVER MAC Address
-  Make a C++ class structure
-  Avoid delay(2000) instead try like milliseconds
-  */
-  
-  // TODO: REPLACE WITH YOUR RECEIVER MAC Address
-  uint8_t broadcastAddress[] = {0XC0, 0X5D, 0X89, 0XAF, 0XE8, 0X6C};
-  
-  // Structure example to send data
-  // Must match the receiver structure
-  typedef struct struct_message {
-    float a;
-    float b;
-    float c;
-  } struct_message;
-  
-  // Create a struct_message called myData
-  struct_message myData;
-  Adafruit_MPU6050 mpu;
-  
-  esp_now_peer_info_t peerInfo;
-  
-  // callback when data is sent
-  void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  }
-   
-  void setup() {
-    // SERIAL MONITOR
-    Serial.begin(115200);
-  
-    // WIFI RADIO
-    WiFi.mode(WIFI_STA);
-    // Init ESP-NOW
-    if (esp_now_init() != ESP_OK) {
-      Serial.println("Error initializing ESP-NOW");
-      return;
+// PHYS 70 Sender Microcontroller
+
+
+// Imports and Installs
+#include esp_now.h
+#include WiFi.h
+#include Adafruit_MPU6050.h
+#include Adafruit_Sensor.h
+
+
+// Variables
+unsigned long lastTime = 0;
+const unsigned long interval = 100;
+
+
+// Class Definition
+class ESPNowTransmitter {
+  private:
+    // Define variables private to Class
+    uint8_t broadcastAddress[6] = {0xC0, 0x5D, 0x89, 0xAF, 0xE8, 0x6C};
+    struct struct_message {
+        float a;
+        float b;
+        float c;
+    } myData;
+    Adafruit_MPU6050 mpu;
+    esp_now_peer_info_t peerInfo;
+    unsigned long lastTimeESPNow = 0;
+    const unsigned long intervalESPNow = 10;
+
+  public:
+    ESPNowTransmitter() {
+      // Constructor
     }
-    // Once ESPNow is successfully Init, we will register for Send CB to
-    // get the status of Trasnmitted packet
-    esp_now_register_send_cb(OnDataSent);
-    // Register peer
-    memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-    peerInfo.channel = 0;  
-    peerInfo.encrypt = false;
-    // Add peer        
-    if (esp_now_add_peer(&peerInfo) != ESP_OK){
-      Serial.println("Failed to add peer");
-      return;
+
+    void begin() {
+      // Initialize Serial, Wifi, ESPNow, and MPU
+      Serial.begin(115200);
+      initWiFi();
+      initESPNow();
+      initMPU();
     }
-  
-    // ACCELEROMETER
-    // Wire.begin(SDA, SCL)
-    while (!mpu.begin()) {
-      Serial.println("Failed to find MPU6050 chip");
-      delay(10);
+
+    void sendData() {
+      // Package data from MPU, then send
+      sensors_event_t a, g, temp;
+      mpu.getEvent(&a, &g, &temp);
+      myData.a = a.acceleration.x;
+      myData.b = a.acceleration.y;
+      myData.c = a.acceleration.z;
+      Serial.print("Acceleration X: ");
+      Serial.print(myData.a);
+      Serial.print(", Y: ");
+      Serial.print(myData.b);
+      Serial.print(", Z: ");
+      Serial.println(myData.c);
+
+      esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
+      if (result == ESP_OK) {
+          Serial.println("Success sending the data");
+      }
     }
-    Serial.println("Successfully found MPU6050 chip");
-    mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
-    mpu.setGyroRange(MPU6050_RANGE_500_DEG);
-    mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
-  }
-   
-  void loop() {
-    // Set values to send
-  
-    // ACCELEROMETER
-    sensors_event_t a, g, temp;
-    mpu.getEvent(&a, &g, &temp);
-    Serial.print("Acceleration X: ");
-    Serial.print(a.acceleration.x);
-    Serial.print(", Y: ");
-    Serial.print(a.acceleration.y);
-    Serial.print(", Z: ");
-    Serial.print(a.acceleration.z);
-    Serial.println(" m/s^2");
-  
-    myData.a = a.acceleration.x;
-    myData.b = a.acceleration.y;
-    myData.c = a.acceleration.z;
-    // Send message via ESP-NOW
-    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
-    if (result == ESP_OK) {
-      Serial.println("Success sending the data");
+
+  private:
+    void initWiFi() {
+      // Initialize WiFi
+      WiFi.mode(WIFI_STA);
     }
-  
-    // TODO: avoid delay, use 
-    delay(100);
-  }
+
+    void initESPNow() {
+      // Initialize ESPNow
+      // Once ESPNow is successfully Init, register for Send CB to
+      // get the status of Trasnmitted packet
+      if (esp_now_init() != ESP_OK) {
+          Serial.println("Error initializing ESP-NOW");
+          return;
+      }
+      esp_now_register_send_cb(OnDataSent);
+      memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+      peerInfo.channel = 0;
+      peerInfo.encrypt = false;
+      if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+          Serial.println("Failed to add peer");
+          return;
+      }
+    }
+
+    void initMPU() {
+      // If we have not found the MPU, wait until we have
+      // Once we have, set parameters
+      while (!mpu.begin()) {
+          if (millis() - lastTimeESPNow >= intervalESPNow) {
+            lastTimeESPNow = millis();
+            Serial.println("Failed to find MPU6050 chip");
+          }
+      }
+      Serial.println("Successfully found MPU6050 chip");
+      mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+      mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+      mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
+    }
+
+    static void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+      // Did we make a successful delivery to receiver?
+      Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+    }
+};
+
+// Create an instance of the class
+ESPNowTransmitter espNowTransmitter;
+
+void setup() {
+    espNowTransmitter.begin();
+}
+
+void loop() {
+    if (millis() - lastTime >= interval) {
+      lastTime = millis();
+      espNowTransmitter.sendData();
+    }
+}
   </code></pre> 
+</div>
+<p><br></p>
+By this point, feel free to test it out!  Plug the cable either into the receiver or the sender,
+whichever one you prefer to watch the data on the Serial monitor, and play around with the thresholds
+to make the light go bright.
+<p><br></p>
+<div class="video-container">
+  <video controls>
+    <source src="presentation.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 </div>
 <p><br></p>
 <h4>Part 2: Oscilloscope</h4>
 We're asked to use an oscilloscope to discover the time domain at which your output device is operating. 
 Is it on a fixed clock? What's its speed?  Share images and describe your findings.
-
+<p><br></p>
 
 </div>
 </xmp>
