@@ -220,7 +220,7 @@ code {
 video {
   width: 33%; /* Adjust width as needed */
   height: 300px; /* Set a smaller height */
-  object-fit: cover; /* Ensures the video fits well */
+  object-fit: contain; /* Ensures the video fits well */
   border: 1px solid #555;
   margin-left: auto;
   margin-right: auto;
