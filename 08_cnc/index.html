@@ -108,12 +108,12 @@ state of Texas because I have family there for a wedding coming up in Spring.  H
   <li>Mixer Stick (just any stick will do)</li>
   <li>Carboard sheet to catch any residue</li>
   <li>Water</li>
-  <li>Drycast material</li>
+  <li>DryStone casting material</li>
 </o>
 <p><br></p>
 <img class="center_image" src="texas1.png">
 <p><br></p>
-The drycast material requires 100 parts of it to 20 parts water.  The instructions say to 
+The drystone material requires 100 parts of it to 20 parts water.  The instructions say to 
 specifically add powder to water.  Here were my steps and a timelapse:
 <o>
   <li>I tared the cups and added water and material until they were 20g and 100g, respectively.</li>
@@ -130,9 +130,77 @@ specifically add powder to water.  Here were my steps and a timelapse:
 <p><br></p>
 After the steps were done, I let it sit overnight.  I came back, and here was the result!
 <p><br></p>
-<img class="center_image" src="texas3.png">
+<div class="img-container">
+  <img src="texas4.jpeg">
+  <img src="texas3.jpeg">
+</div>
 <p><br></p>
+<h4>Added Part: Final Project</h4>
+I worked on my final project a bit more in anticipation of the upcoming review lab sessions.  Here is what I did.  I replaced some of the wires with socket ends so that I could transition some parts off of the breadboard (MPU, ESP32).  Only the power wires, GND wires, and LED circuit remain attached to the breadboard now.</li>
+I also tweaked the code so that:
+<o>
+  <li>The receiver LED stays on or off indefinitely after a swish of the wand instead of immediately going on then off</li>
+  <li>The threshold for whether we turn the light on or off is determined by a delta/change between the previous message data on x-axis acceleration and the currently coming-in data.</li>
+  <li>I introduced a new timing structure to help with consistency of output, where if we detect a delta change big enough, we wait to read in other values for a certain set duration so that it does not pick up on the following vibrations of the wand and mistake it for another swish.</li>
+</o>
+Here is the updated receiver code:
+<p><br></p>
+<div class="code-box">
+  <pre><code class="language-arduino">
+    // PHYS 70 Receiver Microcontroller
 
+
+    // Imports and Installs
+    #include esp_now.h
+    #include WiFi.h
+    
+    
+    // Variables
+    int ledPin = 23;
+    typedef struct struct_message {
+        float a;
+        float b;
+        float c;
+    } struct_message;
+    struct_message myData;
+    
+    
+    // Callbacks
+    void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+      memcpy(&myData, incomingData, sizeof(myData));
+      Serial.print("Received: ");
+      Serial.println(myData.a);
+      if (myData.a > 8) {
+        Serial.println("Low");
+        digitalWrite(ledPin, LOW);
+      } else {
+        Serial.println("High");
+        digitalWrite(ledPin, HIGH);
+      }
+    }
+     
+    // Function: Setup
+    void setup() {
+      // Initialize Serial
+      Serial.begin(115200);
+      // Initialize ledPin, WiFi
+      pinMode(ledPin, OUTPUT);
+      WiFi.mode(WIFI_STA);
+      // Initialize ESP-NOW
+      if (esp_now_init() != ESP_OK) {
+        Serial.println("Error initializing ESP-NOW");
+        return;
+      }
+      // Initialize Callback
+      esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
+    }
+     
+    // Function: Loop
+    void loop() {
+    }
+  </code></pre> 
+</div>
+<p><br></p>
 
 <p><br/></p>
 </div>
