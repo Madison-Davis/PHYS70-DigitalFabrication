@@ -98,7 +98,81 @@ before tying it.  The tension can help pull the finger down easier when the serv
 <img class="center_image" src="servos3.jpg">
 <p><br></p>
 <h3>Part 2: Glove</h3>
-TODO
+To make the glove, you'll want to grab these components:
+<o>
+  <li>5x Flex/Bend sensors (similar to these or these)</li>
+  <li>1x Glove (of any material, ideally a flexible cloth-based glove)</li>
+  <li>5x 10K Ohm resistors</li>
+  <li>A handful of male-male (pin-pin), male-female (pin-socket), and female-female (socket-socket) wires</li>
+</o>
+<p><br></p>
+Start by assembling the glove.  This involves primarily two steps:
+<o>
+  <li>Solder individual wires to all each of the sensor's terminals.
+    Usually, flex sensors have quite small terminal points on them, so it is best to solder on wires so they can be attached to later circuit components. We recommend using wires with socket pins so you can easily attach them to the ESP32 pins and any other circuit components.
+As an alternative, you may also find it easier to strip and directly solder the copper of the wire onto the sensor's terminals.
+  </li>
+  <li>Attach the sensors to the glove.  Allow them to retain some form of movement when the fingers bend. We allowed for this by using two methods: sewing and taping the gloves. 
+    By sewing the sensors onto the glove, we could create a 'pocket' which the glove could simply be tightened into and remain attached with the glove
+    However, this became a little troublesome as the threads became loose after a few cycles of the fingers bending. As a result, we resorted to using tape at the base and tips of the fingers to anchor the sensors in place to allow them to bend effectively as the fingers bent.
+    </li>
+</o>
+This is how the sensors should look on the glove once you're done:
+<p><br></p>
+<img class="center_image" src="glove1.jpg">
+<p><br></p>
+Once the sensors are attached to the glove, you can move on to actually making the circuit that will sense the fingers bending. 
+The circuit is pretty simplistic. Essentially, each and every flex sensor acts as a variable resistor.  
+As the sensor bends, the resistance changes. Hence, one would need to wire these to a microcontroller (in our case, an ESP32) in a way that would allow the device to pick up on resistance changes. 
+The ESP32 cannot inherently detect resistance changes, hence we would need to utilize a voltage divider circuit to reflect changes in resistance as changes in voltage read by the board.
+<p><br></p>
+Since it is a simple change in voltage that would be detected, the values only need to be AnalogRead in the ESP32 (see the code later on).
+You can use a breadboard to build this circuit, or, can alternatively solder together the circuit utilizing wires and resistors. 
+We utilized 10K Ohm resistors, but you could likely use different ones as well.  All you would have to do is adjust the code to the new voltage values obtained. 
+<p><br></p>
+Here is a diagram of the basic voltage divider circuit we used.
+The right-picture shows us extrapolating the left-picture to have 5 sensors.
+<p><br></p>
+<div class="img-container">
+  <img src="glove2.jpg">
+  <img src="glove3.jpg">
+</div>
+<p><br></p>
+We wanted to avoid using breadboards for portability, so we transposed the voltage divider circuit straight onto wire-wire connections. For this we:
+<o>
+  <li>Took one male-female wire (wire 'A') and stripped a small part about ¼ of the way from the top (while making sure the surrounding insulation on the wire still remains).</li>
+  <li>Hooked a 10K ohm resistor around this exposed wire on wire A (hence connecting the resistor in series with wire A)</li>
+  <li>Attached another wire (wire 'B') on the other end of the resistor (i.e connecting it in series with the resistor). Wire B ends with a socket/female plug (so it can be attached onto the ESP32 board easily).</li>
+  <li>Soldered all the connections together (& optionally also made it easier to manage by covering parts with heat shrink).</li>
+  <li>Attached the male end of wire A to the flex sensor</li>
+  <li>Attached the female end of wire B to the power from the board</li>
+  <li>Attached the female end of wire A to an ESP32 pin</li>
+</o>
+<p><br></p>
+The left picture shows how the circuit would look for a single flex sensor without the breadboard.
+Ther right picture shows the circuit in real life, for all five of our soldered-together wires.
+<p><br></p>
+<div class="img-container">
+  <img src="glove4.jpg">
+  <img src="glove5.jpg">
+</div>
+<p><br></p>
+Since there are a limited number of power and ground pins, we also soldered together a wire that branches into five different wires 
+(each of which could connect to one sensor at a time).  We made two of these, one for the positive terminal, one for ground.
+<p><br></p>
+PLEASE NOTE: since this project uses the ESP32's WiFi functionalities, make sure to utilize the board's ADC1 pins for reading the sensors (instead of ADC2). 
+ADC2 pins are used during WiFi transmissions, and this process will interfere with the monitoring of sensor values if connected to the same pins. 
+In other words, it'll just output '0' for the data if the data is coming from a ADC2 pin.
+If you are unsure about which pins are ADC1 or ADC2, the best technique is to refer to an ESP32 Pinout diagram. 
+The specific ESP32 we were using was the ESP32 Dev-Kit, so this is the Pinout chart relevant to us.
+In our case, we utilized pins 32, 33, 34, 35, and VN (which is coded as 39 in the ESP32 code).
+<p><br></p>
+<img class="center_image" src="glove6.jpg">
+<p><br></p>
+Wire the sensors to the board, and you're good to go and ready to receive glove data!
+This is how ours looked like. You should aim for something similar as well:
+<p><br></p>
+<img class="center_image" src="glove7.jpg">
 <p><br></p>
 <h3>Part 3: Code and Integration</h3>
 So far, we have two circuits: one for the servos, and one for the glove.
