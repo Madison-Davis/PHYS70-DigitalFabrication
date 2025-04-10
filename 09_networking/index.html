@@ -24,8 +24,15 @@
 <p class="margin">   </p>
 
 <h3>Week 9: Radio, WiFi, Bluetooth (IoT)</h3>
+This week, our group made a glove-controlled wireless robotic hand! 
 <p><br></p>
-<img class="center_image" src="hand4.jpeg">
+<div class="video-container">
+  <video controls muted>
+    <source src="mov2.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
 <p><br></p>
 <p class="margin">   </p>
 <div class="flexrow">
@@ -36,7 +43,7 @@
 We're asked to work with a partner or group of 3 to program one or more microcontroller(s) to obtain and 
 respond to information from the internet or radio.  The project should include at least one input and one output. 
 <p><br></p>
-Our group was Hiteyjit (Joey) and I, and together we worked on a glove-controlled robotic hand.  One person puts on
+Our group was Hiteyjit (Joey) and I.  The idea is that one person puts on
 a glove with resistor sensors on each finger.  When a finger is bent, the sensor reads a different resistance into the
 ESP32 glove microcontroller.  This ESP32 reads the data from all 5 fingers every so often and relays the information
 over ESP-Now to a second ESP32 located in the robotic hand.  Based on the data, it'll turn servos attached to strings,
@@ -74,36 +81,39 @@ Repeat this for all five fingers.  Here is what it looks like:
 <p><br></p>
 <img class="center_image" src="hand4.jpeg">
 <p><br></p>
-Finally, you'll want to grab 5 servos and connect them to the stings by wrapping the string around the servo handle.
-You don't need to technically need to use the servos just yet, and in fact I recommend testing them in isolation with
-the code before tying them... if the start and end rotation position is not properly set, you might send a finger flying or
-over-rotate it.
+Finally, you'll want to grab 5 servos.  Set up the servos based on the following circuit.
+The servos should have little handles attachable to their motor.  Attach the handles to the servo motor
+so that they face up when the motor is turned as far as it can go (its 'starting position').
 <p><br></p>
-
+<div class="img-container">
+  <img src="servos1.jpg">
+  <img src="servos2.jpg">
+</div>
+<p><br></p>
+The servos will eventually be tied to the strings.  You'll tie the string in a knot around the handles.
+No need to do this just get, as you'll want to verify they work properly with the glove, radio, and code.
+But, once those things are done, that's the last step!  I recommend that you add some tension by pulling on the rope
+before tying it.  The tension can help pull the finger down easier when the servo turns.
+<p><br></p>
+<img class="center_image" src="servos3.jpg">
+<p><br></p>
 <h3>Part 2: Glove</h3>
 TODO
 <p><br></p>
 <h3>Part 3: Code and Integration</h3>
-Finally, we integrate the microcontrollers.  Here are our circuits.  The left shows the circuit for the
-hand and the right shows the circuit for the glove.  We'll use ESP-Now to connect the two ESP32s together.
-<p><br></p>
-<div class="img-container">
-  <img src="circuit1.jpeg">
-  <img src="circuit2.jpeg">
-</div>
+So far, we have two circuits: one for the servos, and one for the glove.
+Each has an ESP32.  We'll use ESP-Now to connect the two ESP32s together.
 <p><br></p>
 Step 1: determine the MAC address of the hand-ESP32 (receives data).  Copy-paste this code into ArduinoIDE
 with the correct selected Module (ESP32 Dev Module) and port (usually dev/.../serial).  Click 'upload' to
 upload the code to the ESP32 and watch the Serial output on ArduinoIDE for the outputted MAC Address.
 <div class="code-box">
   <pre><code class="language-arduino">
-    /*
-    https://randomnerdtutorials.com/esp-now-esp32-arduino-ide/
     Rui Santos & Sara Santos - Random Nerd Tutorials
     Complete project details at https://RandomNerdTutorials.com/get-change-esp32-esp8266-mac-address-arduino/
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files. 
     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-    */
+
     #include WiFi.h
     #include esp_wifi.h
 
@@ -146,15 +156,17 @@ address to the one from Step 1.  Upload the code to the glove-ESP32.
     // Imports and Installs
     #include esp_now.h
     #include WiFi.h
-    #include Adafruit_MPU6050.h
-    #include Adafruit_Sensor.h
-
-
-    // Variables
+    
+    
+    //Initializing Sensor pins
+    const int pinPinky = 33;    
+    const int pinRing = 34;     
+    const int pinMiddle = 35;   
+    const int pinIndex = 32;    
+    const int pinThumb = 39;    
     unsigned long lastTime = 0;
     const unsigned long interval = 100;
     uint8_t broadcastAddress[] = {0XC0, 0X5D, 0X89, 0XAF, 0XE8, 0X6C};
-    // message sent by glove; how much 'bend' there is per glove sensor (higher number = more bend)
     typedef struct struct_message {
     float glovePinky;
     float gloveRing;
@@ -164,53 +176,71 @@ address to the one from Step 1.  Upload the code to the glove-ESP32.
     } struct_message;
     struct_message myData;
     esp_now_peer_info_t peerInfo;
-
-
+    
+    
     // Callbacks
     void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {}
-
-
-    // Function: Setup
+    
+    
+    
+    // Setup
     void setup() {
-    Serial.begin(115200);
-    // Initialize WiFi
-    WiFi.mode(WIFI_STA);
-    // Initialize ESP-Now and Peer Info
-    if (esp_now_init() != ESP_OK) {
-      Serial.println("Error initializing ESP-NOW");
-      return;
-    }
-    esp_now_register_send_cb(OnDataSent);
-    memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-    peerInfo.channel = 0; 
-    peerInfo.encrypt = false;
-    if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-      Serial.println("Failed to add peer");
-      return;
-    }
-    Serial.println("Successfully found MPU6050 chip");
-    // Initialize Glove SEnsors (TODO)
-    }
-
-
-    // Function: Loop
-    void loop() {
-    if (millis() - lastTime > interval) {
-      lastTime = millis();
-      // TODO: get glove sensor data
-      
-      // format data into message ('bend' data)
-      myData.glovePinky = ?;
-      myData.gloveRing = ?;
-      myData.gloveMiddle = ?;
-      myData.gloveIndex = ?;
-      myData.gloveThumb = ?;
-      // send message
-      esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
-      if (result == ESP_OK) {
-        Serial.println("Success sending the data");
+      Serial.begin(9600);
+      WiFi.mode(WIFI_STA);
+      // Initialize ESP-Now and Peer Info
+      if (esp_now_init() != ESP_OK) {
+        Serial.println("Error initializing ESP-NOW");
+        return;
+      }
+      esp_now_register_send_cb(OnDataSent);
+      memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+      peerInfo.channel = 0;
+      peerInfo.encrypt = false;
+      if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+        Serial.println("Failed to add peer");
+        return;
       }
     }
+    
+    
+    // Loop
+    void loop(){
+      int valuePinky;
+      int valueRing;
+      int valueMiddle;
+      int valueIndex;
+      int valueThumb;
+    
+      valuePinky = analogRead(pinPinky);
+      valueRing = analogRead(pinRing);
+      valueMiddle = analogRead(pinMiddle);
+      valueIndex = analogRead(pinIndex);
+      valueThumb = analogRead(pinThumb);
+    
+      Serial.print(valuePinky);
+      Serial.print("\t");
+      Serial.print(valueRing);
+      Serial.print("\t");
+      Serial.print(valueMiddle);
+      Serial.print("\t");
+      Serial.print(valueIndex);
+      Serial.print("\t");
+      Serial.println(valueThumb);
+    
+      if (millis() - lastTime > interval) {
+        lastTime = millis();
+        myData.glovePinky = valuePinky;
+        myData.gloveRing = valueRing;
+        myData.gloveMiddle = valueMiddle;
+        myData.gloveIndex = valueIndex;
+        myData.gloveThumb = valueThumb;
+        // send message
+        esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+        if (result == ESP_OK) {
+          Serial.println("Success sending the data");
+        }
+      }
+     delay(200);
     }
   </code></pre> 
 </div>
@@ -222,127 +252,132 @@ different on your end (this way you don't over-rotate a finger).
   <pre><code class="language-arduino">
     // PHYS 70 3D Printed Hand Microcontroller
 
+
     // Imports and Installs
     #include esp_now.h
     #include WiFi.h
-
-
+    #include ESP32Servo.h
+    
+    
     // Variables
     // pin numbers
-    int pinPinky  = 1;
-    int pinRing   = 2;
-    int pinMiddle = 3;
-    int pinIndex  = 4;
-    int pinThumb  = 5;
+    int pinPinky  = 23;
+    int pinRing   = 22;
+    int pinMiddle = 21;
+    int pinIndex  = 19;   
+    int pinThumb  = 18;
+    
+    int thresholdPinky = 800;     // type 1 resistor sensor: if data below this, bend finger
+    int thresholdRing = 400;      // type 1 resistor sensor: if data below this, bend finger
+    int thresholdMiddle = 4000;   // type 2 resistor sensor: if data above this, bend finger
+    int thresholdIndex = 4000;    // type 2 resistor sensor: if data above this, bend finger
+    int thresholdThumb = 4000;    // type 2 resistor sensor: if data above this, bend finger
+    
     // message sent by glove; how much 'bend' there is per glove sensor (higher number = more bend)
     typedef struct struct_message {
-    float glovePinky;
-    float gloveRing;
-    float gloveMiddle;
-    float gloveIndex;
-    float gloveThumb;
+      float glovePinky;
+      float gloveRing;
+      float gloveMiddle;
+      float gloveIndex;
+      float gloveThumb;
     } struct_message;
     struct_message myData;
     unsigned long lastTime = 0;
     int threshold = 10;                        // how much 'bend' we need from glove to trigger an event
     const unsigned long waitInterval = 1000;   // how much to wait before next movement
-
-
+    
+    
     // Class Servo Definition
     class UselessServo {
-    Servo servo;
-    int pos;
-    int startPos;
-    int endPos;
-    int increment;            // amount we move servo by at each increment
-    int updateInterval;       // determine speed by which we move our servo
-    unsigned long lastUpdate; // counter to see how much time has passed
-    public:
-      UselessServo (int interval, int start, int target) {
-        // initialize class
-        updateInterval = interval;
-        startPos = start;
-        pos = startPos;
-        endPos = target;
-        increment = -1;
-      }
-      void Attach (int pin) {
-        // 'attach' or 'put' servo to its initial position
-        servo.attach(pin);
-        servo.write(startPos);
-      }
-      void toTarget() {
-        // move servo incrementally to target end position
-        if ((millis() - lastUpdate) > updateInterval && pos != endPos) {
-          lastUpdate = millis();
-          pos += increment;
-          servo.write(pos);
+      Servo servo;
+      int pos;
+      int startPos;
+      int endPos;
+      int increment;            // amount we move servo by at each increment
+      int updateInterval;       // determine speed by which we move our servo
+      unsigned long lastUpdate; // counter to see how much time has passed
+      public:
+        UselessServo (int interval, int start, int target) {
+          // initialize class
+          updateInterval = interval;
+          startPos = start;
+          pos = startPos;
+          endPos = target;
+          increment = -10;
         }
-      }
-      void Return() {
-        // move servo incrementally to initial start position
-        if ((millis() - lastUpdate) > updateInterval && pos != startPos) {
-          lastUpdate = millis();
-          pos -= increment;
-          servo.write(pos);
+        void Attach (int pin) {
+          // 'attach' or 'put' servo to its initial position
+          servo.attach(pin);
+          servo.write(startPos);
         }
-      }
-      bool isMoving() {
-        // if not moving, return 0, otherwise return 1
-        return !(pos == endPos || pos == startPos);
-      }
+        void toTarget() {
+          // move servo incrementally to target end position
+          servo.write(endPos);
+        }
+        void Return() {
+          // move servo incrementally to initial start position
+          servo.write(startPos);
+        }
+        bool isMoving() {
+          // if not moving, return 0, otherwise return 1
+          return !(pos == endPos || pos == startPos);
+        }
     };
-
-
+    
+    
     // Class Servo Objects
-    UselessServo servoPinky(15, 180, 90);
-    UselessServo servoRing(15, 180, 90);
-    UselessServo servoMiddle(15, 180, 90);
-    UselessServo servoIndex(15, 180, 90);
-    UselessServo servoThumb(15, 180, 90);
-
-
+    UselessServo servoPinky(1, 180, 0);
+    UselessServo servoRing(1, 180, 0);
+    UselessServo servoMiddle(1, 180, 0);
+    UselessServo servoIndex(1, 180, 0);
+    UselessServo servoThumb(1, 180, 0);
+    
+    
     // Callbacks
     void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-    memcpy(&myData, incomingData, sizeof(myData));
-    Serial.print("Received: ");
-    Serial.println(myData.glovePinky);
-    Serial.println(myData.gloveRing);
-    Serial.println(myData.gloveMiddle);
-    Serial.println(myData.gloveIndex);
-    Serial.println(myData.gloveThumb);
-    // If we swish the wand hard enough and a bit after a previous swish, it'll trigger an event
-    if (millis() - lastTime >= waitInterval)) {
-      myData.glovePinky > threshold ? lidServo.toTarget() : lidServo.Return();
-      myData.gloveRing > threshold ? lidServo.toTarget() : lidServo.Return();
-      myData.gloveMiddle > threshold ? lidServo.toTarget() : lidServo.Return();
-      myData.gloveIndex > threshold ? lidServo.toTarget() : lidServo.Return();
-      myData.gloveThumb > threshold ? lidServo.toTarget() : lidServo.Return();
-      lastTime = millis();
+      memcpy(&myData, incomingData, sizeof(myData));
+      // If we swish the wand hard enough and a bit after a previous swish, it'll trigger an event
+      if (millis() - lastTime >= waitInterval) {  
+        Serial.println("Received: ");
+        Serial.println(myData.glovePinky);
+        Serial.println(myData.gloveRing);
+        Serial.println(myData.gloveMiddle);
+        Serial.println(myData.gloveIndex);
+        Serial.println(myData.gloveThumb);
+    
+        myData.glovePinky <= thresholdPinky ? servoPinky.toTarget() : servoPinky.Return();
+        myData.gloveRing <= thresholdRing ? servoRing.toTarget() : servoRing.Return();
+        myData.gloveMiddle >= thresholdMiddle ? servoMiddle.toTarget() : servoMiddle.Return();
+        myData.gloveIndex >= thresholdIndex ? servoIndex.toTarget() : servoIndex.Return();
+        myData.gloveThumb >= thresholdThumb ? servoThumb.toTarget() : servoThumb.Return();
+        lastTime = millis();
+      } 
     }
-    }
-
-
+    
+    
     // Function: Setup
     void setup() {
-    // Initialize Serial and Time
-    lastTime = millis();
-    Serial.begin(115200);
-    // Initialize Servos, WiFi
-    servoPinky.Attach(pinPinky);
-    servoRing.Attach(pinRing);
-    servoMiddle.Attach(pinMiddle);
-    servoIndex.Attach(pinIndex);
-    servoIndex.Attach(pinThumb);
-    WiFi.mode(WIFI_STA);
-    // Initialize ESP-NOW
-    if (esp_now_init() != ESP_OK) {
-      Serial.println("Error initializing ESP-NOW");
-      return;
+      // Initialize Serial and Time
+      lastTime = millis();
+      Serial.begin(115200);
+      // Initialize Servos, WiFi
+      servoPinky.Attach(pinPinky);
+      servoRing.Attach(pinRing);
+      servoMiddle.Attach(pinMiddle);
+      servoIndex.Attach(pinIndex);
+      servoThumb.Attach(pinThumb);
+      Serial.println("Attached");
+      WiFi.mode(WIFI_STA);
+      
+      // Initialize ESP-NOW
+      if (esp_now_init() != ESP_OK) {
+        Serial.println("Error initializing ESP-NOW");
+        return;
+      }
+      // Initialize Callback
+      esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
     }
-    // Initialize Callback
-    esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
-    }
+     
     // Function: Loop
     void loop() {
     }
@@ -350,7 +385,19 @@ different on your end (this way you don't over-rotate a finger).
 </div>
 <p><br></p>
 After this, you're done!  Feel free to test it out.
+We're holding the servos with our fingers just so they stay in place.  In the future, perhaps you can 3D print little holders and screw the servos in so they're more tight.
 <p><br></p>
+<div class="video-container">
+  <video controls muted>
+    <source src="mov1.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  
+  <video controls muted>
+    <source src="mov2.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
 <p><br></p>
 
 
