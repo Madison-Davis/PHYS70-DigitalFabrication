@@ -210,6 +210,8 @@ code {
   border: 1px solid #ddd;     /* Light border */
   padding: 15px;
   border-radius: 5px;
+  max-height: 500px;          /* Set the desired max height */
+  overflow-y: auto;           /* Enable vertical scrolling */
 }
 
 .video-container {
