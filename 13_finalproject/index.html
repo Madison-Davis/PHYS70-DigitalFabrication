@@ -56,8 +56,76 @@ Here is everything you will need to build this project:
   <li>PrusaSlicer, PrusaSlicer software, and PLA Material</li>
 </ol>
 <p><br></p>
-<h4>Part 1: Wand</h4> 
-TODO
+<h4>Part 1: Wand and Light</h4> 
+You can download the wand and lamp files directly by clicking this button:
+<p class="margin">   </p>
+<div class="flexrow">
+  <a id="btn" href="./week13.zip" download>Download Wand dxf and Lamp gcode
+  </a>
+</div>
+<p class="margin">   </p>
+To make the wand from scratch, open up Autodesk Fusion to design the wand.  The
+wand has four main parts:
+<ol>
+  <li>Main, Bottom: a half-cylinder where all the circuitry would go</li>
+  <li>Main, Top: a half-cylinder acting as a cover for the circuit</li>
+  <li>Handle: a doorknob-looking end to the wand, for fastening</li>
+  <li>Tip: a decorative piece for the other end, to make it look like a wand</li>
+</ol>
+<p><br></p>
+<div class="img-container">
+  <img src="wand1.png">
+  <img src="wand2.png">
+</div>
+<p><br></p>
+Here are all the parameters of the wand, as well as some photos of the 
+wand.  The parameters were based on my measurements so that the 
+circuit would fit within the main cylindrical-shaped container.
+'main circuit' refers to the cutout within the cylinder for the circuitry.
+'main wand' refers to the overall cylinder-shape that holds the circuit.
+<p><br></p>
+<table class="myTable">
+  <tr><th>Name</th><th>Value (mm)</th>
+  <tr><td>main_wand_diameter</td><td>40</td>
+  <tr><td>main_wand_length</td><td>130</td>
+  <tr><td>main_circuit_width</td><td>28</td>
+  <tr><td>main_circuit_length</td><td>100</td>
+  <tr><td>handle_diameter</td><td>40</td>
+  <tr><td>handle_length</td><td>33</td>
+  <tr><td>tip_length</td><td>150</td>
+</table>
+<p><br></p>
+I then saved the bodies individaully using 'Save Mesh'.  This automatically opens
+up a 3D printing software called PrusaSlicer for me.  If you don't have Prusa, download it for your OS and
+select the appropriate Prusa model you will be using.  Shown below is how
+my handle looks in Prusa.  I made the following edits for each body:
+<ol>
+  <li>Rotate the body so its mostly connected to the base of the Prusa machine.</li>
+  <li>Select 'General: PLA' for material (use this filament in your Prusa machine!)</li>
+  <li>Select 'Infill: 15%' for infill</li>
+  <li>Select 'Support on build plate only' to allow for better printing</li>
+</ol>
+We are now done with the wand!  Let's move onto the lamp.
+I opened a new sketch in Autodesk and drew a sketch for the side of the lamp.
+The dimensions are shown in the image below, but feel free to edit these as you desire.
+After this, I used the Revolver tool to revolve it and make an uncut 3D dimensional
+lamp.  Finally, I Extruded the slanted rectangle in the sketch to intersect with the
+3D dimensional lamp.  This cut out an individual part of the lamp.
+<p><br></p>
+<div class="img-container">
+  <img src="lamp1.png">
+  <img src="lamp2.png">
+</div>
+<p><br></p>
+Next, I used the Circular Pattern tool to revolve this individual piece around.
+The piece on the left was my final design after 'stretching' some of the dimensions
+out from the photos above.  After this, I inserted the mesh to PrusaSlicer, selected the
+same edits (PLA, infill, supports) as with the wand, and downloaded the gcode for printing.
+<p><br></p>
+<div class="img-container">
+  <img src="lamp3.png">
+  <img src="lamp4.png">
+</div>
 <p><br></p>
 <h4>Part 2: Circuit</h4> 
 Let's now build the two circuits.  TODO
