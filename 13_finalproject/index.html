@@ -48,8 +48,9 @@ Here is everything you will need to build this project:
   <li>1 ITG/MPU Accelerometer</li>
   <li>1 Resistor (1k<span>&#8486;</span> is sufficient)</li>
   <li>1 LED</li>
-  <li>2 Li battery backs with female insertions</li>
+  <li>2 Li-ion battery backs with female insertions</li>
   <li>2 male wire insertions compatible with the Li battery female wires</li>
+  <li>1 breadboard</li>
   <li>General pin-socket wires (8 for the accelerometer, and more for power)</li>
   <li>Arduino IDE Software</li>
   <li>1 ESP32 plug-in cable (to upload the code from the Arduino IDE to the microcontrollers)</li>
@@ -60,36 +61,31 @@ Here is everything you will need to build this project:
 You can download the wand and lamp files directly by clicking this button:
 <p class="margin">   </p>
 <div class="flexrow">
-  <a id="btn" href="./week13.zip" download>Download Wand dxf and Lamp gcode
+  <a id="btn" href="./week13.zip" download>Download Wand stl and Lamp gcode
   </a>
 </div>
 <p class="margin">   </p>
 To make the wand from scratch, open up Autodesk Fusion to design the wand.  The
 wand has four main parts:
 <ol>
-  <li>Main, Bottom: a half-cylinder where all the circuitry would go</li>
-  <li>Main, Top: a half-cylinder acting as a cover for the circuit</li>
+  <li>Main: a cut-out cylinder where all the circuitry would go</li>
   <li>Handle: a doorknob-looking end to the wand, for fastening</li>
   <li>Tip: a decorative piece for the other end, to make it look like a wand</li>
 </ol>
 <p><br></p>
 <div class="img-container">
   <img src="wand1.png">
-  <img src="wand2.png">
 </div>
 <p><br></p>
 Here are all the parameters of the wand, as well as some photos of the 
 wand.  The parameters were based on my measurements so that the 
 circuit would fit within the main cylindrical-shaped container.
-'main circuit' refers to the cutout within the cylinder for the circuitry.
 'main wand' refers to the overall cylinder-shape that holds the circuit.
 <p><br></p>
 <table class="myTable">
   <tr><th>Name</th><th>Value (mm)</th>
   <tr><td>main_wand_diameter</td><td>40</td>
   <tr><td>main_wand_length</td><td>130</td>
-  <tr><td>main_circuit_width</td><td>28</td>
-  <tr><td>main_circuit_length</td><td>100</td>
   <tr><td>handle_diameter</td><td>40</td>
   <tr><td>handle_length</td><td>33</td>
   <tr><td>tip_length</td><td>150</td>
@@ -127,8 +123,41 @@ same edits (PLA, infill, supports) as with the wand, and downloaded the gcode fo
   <img src="lamp4.png">
 </div>
 <p><br></p>
+This is what your two objects should look like when done!
+<p><br></p>
+<div class="img-container">
+  <img src="wand3.png">
+</div>
+<p><br></p>
 <h4>Part 2: Circuit</h4> 
-Let's now build the two circuits.  TODO
+Let's now build the two circuits.  This is what they look like as finished products:
+<p><br></p>
+<div class="img-container">
+  <img src="circuit1.png">
+  <img src="circuit2.png">
+</div>
+<p><br></p>
+To handle the wand circuit, I did the following:
+<ol>
+  <li>Solder the pins onto the XIAO board.</li>
+  <li>Solder the power and gnd wires of the male wire onto the back of the XIAO board.  On the back there are two copper platforms that you'll use as a guide to solder the pins onto.</li>
+  <li>Connect the antenna to the XIAO board (no soldering, it's just a little click-on).</li>
+  <li>Grab the MPU and connect the following pins from the MPU to the XIAO: SDA to D4, SCL to D5, 3V3 to 3V3, and GND to GND.</li>
+</ol>
+To handle the light circuit, I did the following:
+<ol>
+  <li>Solder the pins onto the XIAO board.</li>
+  <li>Solder the power and gnd wires of the male wire onto the back of the XIAO board.</li>
+  <li>Connect the antenna to the XIAO board (no soldering, it's just a little click-on).</li>
+  <li>Start creating the 'light-bulb' circuit on the breadboard by connecting the XIAO's GND to the negative power rail.</li>
+  <li>Set up the resistor and LED so that the LED's smaller leg is in line with GND + Resistor. </li>
+  <li>Connect the long leg of the LED to a wire whose end socket is connected to D0 on the XIAO (in the photo, this is the white wire).</li>
+</ol>
+Looks like they're all ready to go!  Some important notes:
+<ol>
+  <li>Really make sure you solder it right by keeping the solder within the outlined copper platforms.  Let the solder melt to allow it to touch the platform base.  This allows us to keep the wire in place.</li>
+  <li>You can test if the battery is alive and the circuit works using a Multimeter!  It serves as a useful debugging tool.</li>
+</ol>
 <p><br></p>
 <h4>Part 3: Code</h4> 
 You'll now want to begin coding.  First, we need to get the MAC address of the receiver microcontroller
@@ -140,33 +169,33 @@ If you want the source code, it comes from <a href="https://randomnerdtutorials.
 <p><br></p>
 <div class="code-box">
   <pre><code class="language-arduino">
-  #include WiFi.h
-  #include esp_wifi.h
-  
-  void readMacAddress(){
-    uint8_t baseMac[6];
-    esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
-    if (ret == ESP_OK) {
-      Serial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
-                    baseMac[0], baseMac[1], baseMac[2],
-                    baseMac[3], baseMac[4], baseMac[5]);
-    } else {
-      Serial.println("Failed to read MAC address");
+    #include WiFi.h
+    #include esp_wifi.h
+    
+    void readMacAddress(){
+      uint8_t baseMac[6];
+      esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
+      if (ret == ESP_OK) {
+        Serial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
+                      baseMac[0], baseMac[1], baseMac[2],
+                      baseMac[3], baseMac[4], baseMac[5]);
+      } else {
+        Serial.println("Failed to read MAC address");
+      }
     }
-  }
-  
-  void setup(){
-    Serial.begin(115200);
-  
-    WiFi.mode(WIFI_STA);
-    WiFi.STA.begin();
-  
-    Serial.print("[DEFAULT] ESP32 Board MAC Address: ");
-    readMacAddress();
-  }
-   
-  void loop(){
-  }
+    
+    void setup(){
+      Serial.begin(115200);
+    
+      WiFi.mode(WIFI_STA);
+      WiFi.STA.begin();
+    
+      Serial.print("[DEFAULT] ESP32 Board MAC Address: ");
+      readMacAddress();
+    }
+      
+    void loop(){
+    }
   </code></pre> 
 </div>
 <p><br></p>
@@ -176,6 +205,7 @@ to the same microcontroller.
 <div class="code-box">
   <pre><code class="language-arduino">
     // PHYS 70 Receiver Microcontroller
+    // NOTE: on USB power, Serial.println works; comment all Serial if you want to run on Li-ion battery //
 
 
     // Imports and Installs
@@ -184,42 +214,63 @@ to the same microcontroller.
     
     
     // Variables
-    int ledPin = 23;
+    int ledPin = D0;
     typedef struct struct_message {
         float a;
         float b;
         float c;
     } struct_message;
     struct_message myData;
+    float lastData = NAN;
+    unsigned long lastTime = 0;
+    const unsigned long waitInterval = 1000; // how much to wait before next swoosh
     
     
     // Callbacks
     void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
       memcpy(&myData, incomingData, sizeof(myData));
-      Serial.print("Received: ");
-      Serial.println(myData.a);
-      if (myData.a > 8) {
-        Serial.println("Low");
-        digitalWrite(ledPin, LOW);
-      } else {
-        Serial.println("High");
-        digitalWrite(ledPin, HIGH);
+    
+      //Serial.print("Received: ");
+      //Serial.println(myData.a);
+    
+      // If booting up for first time
+      if (isnan(lastData)) {
+        lastData = myData.a;
       }
+      
+      // If we swish the wand hard enough and a bit after a previous swish, it'll trigger an event
+      if (abs(myData.a - lastData) > 4 && (millis() - lastTime >= waitInterval)) {
+        //Serial.println("We've swooshed!");
+        int state = digitalRead(ledPin);
+        if (state == HIGH) {
+          //Serial.println("Nox!");
+          digitalWrite(ledPin, LOW);
+        } else {
+          //Serial.println("Lumos!");
+          digitalWrite(ledPin, HIGH);
+        }
+        lastTime = millis();
+      } 
+      lastData = myData.a;
     }
      
     // Function: Setup
     void setup() {
-      // Initialize Serial
-      Serial.begin(115200);
+      // Initialize Serial and Time
+      lastTime = millis();
+      //Serial.begin(115200);
+      //Serial.println("Starting...");
       // Initialize ledPin, WiFi
       pinMode(ledPin, OUTPUT);
+      digitalWrite(ledPin, HIGH);
       WiFi.mode(WIFI_STA);
       // Initialize ESP-NOW
       if (esp_now_init() != ESP_OK) {
-        Serial.println("Error initializing ESP-NOW");
+        //Serial.println("Error initializing ESP-NOW");
         return;
       }
       // Initialize Callback
+      //Serial.println("ESP-NOW ready to receive");
       esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
     }
      
@@ -236,8 +287,9 @@ to upload.
 <div class="code-box">
   <pre><code class="language-arduino">
     // PHYS 70 Sender Microcontroller
-
-
+    // NOTE: on USB power, Serial.println works; comment all Serial if you want to run on Li-ion battery //
+    
+    
     // Imports and Installs
     #include esp_now.h
     #include WiFi.h
@@ -248,7 +300,9 @@ to upload.
     // Variables
     unsigned long lastTime = 0;
     const unsigned long interval = 100;
-    uint8_t broadcastAddress[] = {0XC0, 0X5D, 0X89, 0XAF, 0XE8, 0X6C};
+    // esp32: 0XC0, 0X5D, 0X89, 0XAF, 0XE8, 0X6C
+    // xiao esp32: 24:ec:4a:ca:6d:b4
+    uint8_t broadcastAddress[] = {0X21, 0XEC, 0X4A, 0XCA, 0X6D, 0XB4};
     typedef struct struct_message {
       float a;
       float b;
@@ -275,6 +329,7 @@ to upload.
         
         void GetMPUData() {
           mpu.getEvent(&a, &g, &temp);
+          /* 
           Serial.print("Acceleration X: ");
           Serial.print(a.acceleration.x);
           Serial.print(", Y: ");
@@ -282,6 +337,7 @@ to upload.
           Serial.print(", Z: ");
           Serial.print(a.acceleration.z);
           Serial.println(" m/s^2");
+          */
         }
     };
     
@@ -297,7 +353,7 @@ to upload.
       WiFi.mode(WIFI_STA);
       // Initialize ESP-Now and Peer Info
       if (esp_now_init() != ESP_OK) {
-        Serial.println("Error initializing ESP-NOW");
+        //Serial.println("Error initializing ESP-NOW");
         return;
       }
       esp_now_register_send_cb(OnDataSent);
@@ -305,20 +361,20 @@ to upload.
       peerInfo.channel = 0;  
       peerInfo.encrypt = false;
       if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-        Serial.println("Failed to add peer");
+        //Serial.println("Failed to add peer");
         return;
       }
       // Initialize MPU
       while (!myMPU.mpu.begin()) {
         if (millis() - myMPU.mpuLastTime > myMPU.mpuInterval) {
           myMPU.mpuLastTime = millis();
-          Serial.println("Failed to find MPU6050 chip");
+          //Serial.println("Failed to find MPU6050 chip");
         }
       }
       myMPU.mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
       myMPU.mpu.setGyroRange(MPU6050_RANGE_500_DEG);
       myMPU.mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
-      Serial.println("Successfully found MPU6050 chip");
+      //Serial.println("Successfully found MPU6050 chip");
     }
     
     // Function: Loop
@@ -333,11 +389,12 @@ to upload.
         myData.c = myMPU.a.acceleration.z;
         // send message
         esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
-        if (result == ESP_OK) {
-          Serial.println("Success sending the data");
-        }
+        //if (result == ESP_OK) {
+        //  Serial.println("Success sending the data");
+        //}
       }
     }
+    
   </code></pre> 
 </div>
 <p><br></p>
