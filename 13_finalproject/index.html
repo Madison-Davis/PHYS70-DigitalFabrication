@@ -50,9 +50,10 @@ Here is everything you will need to build this project:
   <li>1 LED</li>
   <li>2 Li-ion battery backs with female insertions</li>
   <li>2 male wire insertions compatible with the Li battery female wires</li>
-  <li>1 breadboard</li>
-  <li>General pin-socket wires (8 for the accelerometer, and more for power)</li>
+  <li>3 socket-socket wires for the light circuit</li>
+  <li>4 socket-socket wires for the wand circuit</li>
   <li>Arduino IDE Software</li>
+  <li>Duct tape or twist-ties</li>
   <li>1 ESP32 plug-in cable (to upload the code from the Arduino IDE to the microcontrollers)</li>
   <li>PrusaSlicer, PrusaSlicer software, and PLA Material</li>
 </ol>
@@ -130,28 +131,31 @@ This is what your two objects should look like when done!
 </div>
 <p><br></p>
 <h4>Part 2: Circuit</h4> 
-Let's now build the two circuits.  This is what they look like as finished products:
+Let's now build the two circuits.  This is what they look like as finished products.
+The wand circuit is on the left and the light circuit is on the right.
 <p><br></p>
 <div class="img-container">
-  <img src="circuit1.png">
-  <img src="circuit2.png">
+  <img src="circuit1.jpeg">
+  <img src="circuit2.jpeg">
 </div>
 <p><br></p>
 To handle the wand circuit, I did the following:
 <ol>
   <li>Solder the pins onto the XIAO board.</li>
-  <li>Solder the power and gnd wires of the male wire onto the back of the XIAO board.  On the back there are two copper platforms that you'll use as a guide to solder the pins onto.</li>
+  <li>Solder the male battrery power and GND wires to the 3V3 and GND copper plates on back of the XIAO board.</li>
   <li>Connect the antenna to the XIAO board (no soldering, it's just a little click-on).</li>
   <li>Grab the MPU and connect the following pins from the MPU to the XIAO: SDA to D4, SCL to D5, 3V3 to 3V3, and GND to GND.</li>
 </ol>
 To handle the light circuit, I did the following:
 <ol>
   <li>Solder the pins onto the XIAO board.</li>
-  <li>Solder the power and gnd wires of the male wire onto the back of the XIAO board.</li>
+  <li>Solder the male battrery power and GND wires to the 3V3 and GND copper plates on back of the XIAO board.</li>
   <li>Connect the antenna to the XIAO board (no soldering, it's just a little click-on).</li>
-  <li>Start creating the 'light-bulb' circuit on the breadboard by connecting the XIAO's GND to the negative power rail.</li>
-  <li>Set up the resistor and LED so that the LED's smaller leg is in line with GND + Resistor. </li>
-  <li>Connect the long leg of the LED to a wire whose end socket is connected to D0 on the XIAO (in the photo, this is the white wire).</li>
+  <li>Use a socket-socket wire to connect the XIAO's GND pin to one end of the resistor.</li>
+  <li>Use a socket-socket wire to connect the other end of the resistor to another socket-socket wire.</li>
+  <li>Take this new socket-socket wire and connect its end to the short leg of the LED (cathode).</li>
+  <li>Use a socket-socket wire to connect the long LED leg (anode) to the XIAO's D0 pin</li>
+  <li>Manage the wires by using duct tape (or perhaps twist-ties).</li>
 </ol>
 Looks like they're all ready to go!  Some important notes:
 <ol>
@@ -225,7 +229,9 @@ to the same microcontroller.
         float c;
     } struct_message;
     struct_message myData;
-    float lastData = NAN;
+    float lastDataA = NAN;
+    float lastDataB = NAN;
+    float lastDataC = NAN;
     unsigned long lastTime = 0;
     const unsigned long waitInterval = 1000; // how much to wait before next swoosh
     
@@ -238,12 +244,29 @@ to the same microcontroller.
       //Serial.println(myData.a);
     
       // If booting up for first time
-      if (isnan(lastData)) {
-        lastData = myData.a;
+      if (isnan(lastDataA)) {
+        lastDataA = myData.a;
       }
+      if (isnan(lastDataB)) {
+        lastDataB = myData.b;
+      }
+      if (isnan(lastDataC)) {
+        lastDataC = myData.c;
+      }
+    
+      
+    
+      //Serial.println(myData.a);
+      //Serial.println(myData.b);
+      //Serial.println(myData.c);
+    
+      
       
       // If we swish the wand hard enough and a bit after a previous swish, it'll trigger an event
-      if (abs(myData.a - lastData) > 4 && (millis() - lastTime >= waitInterval)) {
+      if ((abs(myData.a - lastDataA) > 4 || 
+          abs(myData.b - lastDataB) > 4 ||
+          abs(myData.c - lastDataC) > 4)
+          && (millis() - lastTime >= waitInterval)) {
         //Serial.println("We've swooshed!");
         int state = digitalRead(ledPin);
         if (state == HIGH) {
@@ -255,7 +278,9 @@ to the same microcontroller.
         }
         lastTime = millis();
       } 
-      lastData = myData.a;
+      lastDataA = myData.a;
+      lastDataB = myData.b;
+      lastDataC = myData.c;
     }
      
     // Function: Setup
@@ -402,7 +427,9 @@ to upload.
   </code></pre> 
 </div>
 <p><br></p>
-
+From here, you're all ready to test it out!
+<p><br></p>
+<p><br></p>
 </div>
 </xmp>
 </body>
